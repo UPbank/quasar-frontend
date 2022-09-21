@@ -6,7 +6,12 @@
       <div class="q-pa-md">
         <div>Operator</div>
         <div class="q-gutter-xl">
-          <q-select filled v-model="operator" label="Filled" />
+          <q-select
+            filled
+            v-model="operator"
+            :options="options"
+            label="Filled"
+          />
         </div>
         <div>Mobile</div>
         <q-input outlined v-model="phone" mask="+### #########" />
