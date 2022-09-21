@@ -5,7 +5,7 @@ export default {
   failed: 'Action failed',
   success: 'Action was successful',
   login: {
-    header: 'Log in or create a new account to access your account',
+    header: 'Create your new Account',
   },
   register: {
     header: 'Log in or create a new account to access your account',

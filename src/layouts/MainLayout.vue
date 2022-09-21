@@ -40,10 +40,13 @@
     </q-drawer>
 
     <q-page-container>
-      <q-page padding class="column items-center" style="max-width: 1440px">
+      <q-page
+        padding
+        class="column items-center"
+        style="max-width: 1440px; margin-top: 50px"
+      >
         <router-view />
       </q-page>
-      <router-view />
     </q-page-container>
   </q-layout>
 </template>
