@@ -7,4 +7,7 @@ export default {
   login: {
     header: 'Log in or create a new account to access your account',
   },
+  register: {
+    header: 'Log in or create a new account to access your account',
+  },
 };

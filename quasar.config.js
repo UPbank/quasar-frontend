@@ -10,6 +10,8 @@
 
 const { configure } = require('quasar/wrappers');
 const path = require('path');
+const { createDOMCompilerError } = require('@vue/compiler-dom');
+const { QCard } = require('quasar');
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -104,7 +106,7 @@ module.exports = configure(function (/* ctx */) {
       // (like functional components as one of the examples),
       // you can manually specify Quasar components/directives to be available everywhere:
       //
-      // components: [],
+      components: ['QCard'],
       // directives: [],
 
       // Quasar plugins

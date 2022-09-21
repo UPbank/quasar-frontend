@@ -1,35 +1,48 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+  <q-layout view="hHh lpR fFf">
+    <q-header reveal bordered class="bg-primary text-white">
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
+        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+        <q-toolbar-title class="row justify-center">
+          <q-avatar square>
+            <img src="icons/logobranco.png" />
+          </q-avatar>
+        </q-toolbar-title>
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn dense flat round icon="account_circle">
+          <q-popup-proxy side="right" style="width: 200px">
+            <q-card style="width: 200px">
+              <q-list bordered>
+                <sidebar-item
+                  v-for="(page, index) in pagesRight"
+                  :key="index"
+                  :label="page.label()"
+                  :children="page.children"
+                  :to="page.to"
+                />
+              </q-list>
+            </q-card>
+          </q-popup-proxy>
+        </q-btn>
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" elevated>
       <q-list>
-        <q-item-label header> Essential Links </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
+        <sidebar-item
+          v-for="(page, index) in pagesLeft"
+          :key="index"
+          :label="page.label()"
+          :children="page.children"
+          :to="page.to"
         />
       </q-list>
     </q-drawer>
 
     <q-page-container>
+      <q-page padding class="column items-center" style="max-width: 1440px">
+        <router-view />
+      </q-page>
       <router-view />
     </q-page-container>
   </q-layout>
@@ -37,56 +50,83 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import EssentialLink, {
-  EssentialLinkProps,
-} from 'components/EssentialLink.vue';
+import CollapsibleSidebarItem from 'src/components/CollapsibleSidebarItem.vue';
+import LinkSidebarItem from 'src/components/LinkSidebarItem.vue';
+import SidebarPage from 'src/types/SidebarPage';
+import SidebarItem from 'components/SidebarItem.vue';
 
-const essentialLinks: EssentialLinkProps[] = [
+const leftDrawerOpen = ref(true);
+
+const pagesLeft: SidebarPage[] = [
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev',
+    label: () => 'Transfer and Payments',
+    children: [
+      {
+        label: () => 'Transfer',
+        to: '/b',
+      },
+      {
+        label: () => 'Payments',
+        children: [
+          {
+            label: () => 'Service Payments',
+            to: '/b',
+          },
+          {
+            label: () => 'Payments to the Government',
+            to: '/c',
+          },
+          {
+            label: () => 'TELCO Payments',
+            to: '/c',
+          },
+          {
+            label: () => 'Cards',
+            to: '/c',
+          },
+        ],
+      },
+      {
+        label: () => 'Direct Debit',
+        to: '/c',
+      },
+    ],
   },
   {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
+    label: () => 'Card Manager',
+    to: '/d',
   },
   {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
+    label: () => 'Savings Accounts',
+    to: '/e',
   },
 ];
 
-const leftDrawerOpen = ref(false);
+const pagesRight: SidebarPage[] = [
+  {
+    label: () => 'Account Settings',
+    to: '/h',
+  },
+
+  {
+    label: () => 'Documents',
+    children: [
+      {
+        label: () => 'IBAN Certificate',
+        to: '/g',
+      },
+
+      {
+        label: () => 'Account Statements',
+        to: '/i',
+      },
+    ],
+  },
+  {
+    label: () => 'Log Out',
+    to: '/f',
+  },
+];
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
