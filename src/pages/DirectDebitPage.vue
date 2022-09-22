@@ -25,7 +25,6 @@
   </div>
 </template>
 
-<!-- <script setup lang="ts"> -->
 <script setup lang="ts">
 import { ref } from 'vue';
 
@@ -64,7 +63,7 @@ const columns = [
     name: 'Amount',
     label: 'Amount',
     field: 'amount',
-    format: (val) => `${(val / 100).toFixed(2)} €`,
+    format: (val: number) => `${(val / 100).toFixed(2)} €`,
     sortable: true,
   },
 ];
@@ -81,7 +80,7 @@ const rows = ref([
     name: 'Jane Doe',
     inicialdate: '2020/12/30',
     frequency: 'Weekly',
-    amount: '25€',
+    amount: 500,
   },
   {
     name: 'UALG Propinas',

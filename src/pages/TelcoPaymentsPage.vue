@@ -1,20 +1,15 @@
 <template>
   <div class="q-pa-xl"></div>
-  <q-card class="text-caption" size="dense">
+  <q-card class="text-caption" size="dense" bordered>
     <q-card-section padding class="column items-center">
       <div>TELCO Payments</div>
       <div class="q-pa-md">
         <div>Operator</div>
         <div class="q-gutter-xl">
-          <q-select
-            filled
-            v-model="operator"
-            :options="options"
-            label="Filled"
-          />
+          <q-select filled v-model="operator" :options="options" />
         </div>
         <div>Mobile</div>
-        <q-input outlined v-model="phone" mask="+### #########" />
+        <q-input outlined v-model="phone" mask="## #######" />
         <div>Amount</div>
         <q-input
           outlined
@@ -38,8 +33,25 @@ import { ref } from 'vue';
 const operator = ref(null as null | number);
 const phone = ref(null as null | number);
 const amount = ref(null as null | number);
-
+// const format = (val: number) => `${(val / 100).toFixed(2)} €`;
 const model = ref(null);
 
-const options = ['Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'];
+const options = [
+  null,
+  'Lycamobile GT Mobile',
+  'MEO',
+  'MEO Card',
+  'MEO Card - PT Hello /PT Card',
+  'MEO Card - TelefoneHello',
+  'MEO Escola Digital',
+  'Moche',
+  'NOS',
+  'NOS - Escola Digital',
+  'SAPO',
+  'Sapo ADSL',
+  'UZO',
+  'Via Card',
+  'Vodafone',
+  'WTF',
+];
 </script>
