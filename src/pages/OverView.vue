@@ -17,7 +17,7 @@
         map-options
       />
       <q-input
-        style="width: max-content"
+        style="width: 300px"
         class="col self-center"
         v-model="filter"
         placeholder="Search"
@@ -170,9 +170,12 @@ const pagesleft: SidebarPage[] = [
 
 const transactions = [
   { id: 1, name: 'Pingo Doce', amount: -1000, time: '12:34' },
+  { id: 2, name: 'Deloitte', amount: +300000, time: '10:53' },
 ];
 
 const typeFilter = ref('none');
+
+const filter = ref('');
 
 const options = [
   {
@@ -190,12 +193,23 @@ const options = [
 ];
 
 const filteredTransactions = computed(() => {
+  let result;
   if (typeFilter.value == 'income') {
-    return getIncome();
+    result = getIncome();
   } else if (typeFilter.value == 'expense') {
-    return getExpense();
+    result = getExpense();
+  } else {
+    result = transactions;
   }
-  return transactions;
+
+  if (filter.value != '') {
+    const lowercaseFilter = filter.value.toLowerCase();
+    result = result.filter((x) =>
+      x.name.toLowerCase().includes(lowercaseFilter)
+    );
+  }
+
+  return result;
 });
 
 function getIncome() {
