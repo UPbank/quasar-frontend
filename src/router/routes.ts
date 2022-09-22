@@ -80,6 +80,13 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => import('pages/AccountStatementPage.vue') },
     ],
   },
+  {
+    path: '/MoneyTransfers',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/MoneyTransfersPage.vue') },
+    ],
+  },
 
   // Always leave this as last one,
   // but you can also remove it
