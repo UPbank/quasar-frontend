@@ -9,6 +9,10 @@
               <img src="icons/logobranco.png" />
             </q-avatar>
           </q-btn>
+
+          <q-avatar square>
+            <img src="icons/logo_white.svg" />
+          </q-avatar>
         </q-toolbar-title>
 
         <q-btn dense flat round icon="account_circle">

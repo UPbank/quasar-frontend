@@ -93,6 +93,13 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => import('pages/DeleteAccount.vue') },
     ],
   },
+  {
+    path: '/Transfers',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/TransfersPage.vue') },
+    ],
+  },
 
   // Always leave this as last one,
   // but you can also remove it
