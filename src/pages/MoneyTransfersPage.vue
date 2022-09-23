@@ -40,7 +40,7 @@
         <q-expansion-item
           expand-separator
           icon="schedule"
-          label="Choose Frequency"
+          :label="t('Choose Frequency')"
         >
           <q-card>
             <q-card-section>
@@ -66,7 +66,7 @@
                           <div class="row items-center justify-end">
                             <q-btn
                               v-close-popup
-                              label="Close"
+                              :label="t('Close')"
                               color="primary"
                               flat
                             />
@@ -88,7 +88,7 @@
         unelevated
         rounded
         color="primary"
-        label="Continue"
+        :label="t('Continue')"
         @click="send()"
       />
     </q-card-section>
@@ -100,7 +100,9 @@ import { useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const $q = useQuasar();
 const $router = useRouter();
 

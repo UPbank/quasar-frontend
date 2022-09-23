@@ -32,7 +32,12 @@
               >
                 <q-date v-model="date" dense :options="isOver18">
                   <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
+                    <q-btn
+                      v-close-popup
+                      :label="t('Close')"
+                      color="primary"
+                      flat
+                    />
                   </div>
                 </q-date>
               </q-popup-proxy>

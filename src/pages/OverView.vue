@@ -47,7 +47,12 @@
                 >
                   <q-date v-model="date">
                     <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
+                      <q-btn
+                        v-close-popup
+                        :label="t('Close')"
+                        color="primary"
+                        flat
+                      />
                     </div>
                   </q-date>
                 </q-popup-proxy>
@@ -66,7 +71,12 @@
                 >
                   <q-date v-model="date">
                     <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
+                      <q-btn
+                        v-close-popup
+                        :label="t('Close')"
+                        color="primary"
+                        flat
+                      />
                     </div>
                   </q-date>
                 </q-popup-proxy>
@@ -93,7 +103,9 @@
 import { computed, ref } from 'vue';
 import TransferItem from 'src/components/TransferItem.vue';
 import { api } from 'src/boot/axios';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const transactions = [
   { id: 1, name: 'Pingo Doce', amount: -1000, time: '12:34' },
   { id: 2, name: 'Deloitte', amount: +300000, time: '10:53' },
