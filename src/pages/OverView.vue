@@ -2,7 +2,10 @@
   <q-card>
     <q-card-section class="column items-center">
       <div>Balance</div>
-      <div class="text-h5">750.00€</div>
+      <div v-if="account" class="text-h5">
+        {{ (account.balance / 100).toFixed(2) }} €
+      </div>
+      <q-spinner v-else size="lg" class="q-mt-md" />
     </q-card-section>
   </q-card>
   <p></p>
@@ -88,90 +91,20 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import CollapsibleSidebarItem from 'src/components/CollapsibleSidebarItem.vue';
-import LinkSidebarItem from 'src/components/LinkSidebarItem.vue';
-import SidebarPage from 'src/types/SidebarPage';
 import TransferItem from 'src/components/TransferItem.vue';
-import SidebarItem from 'components/SidebarItem.vue';
-
-const leftDrawerOpen = ref(false);
-const rightDrawerOpen = ref(false);
-
-const pagesRight: SidebarPage[] = [
-  {
-    label: () => 'Account Settings',
-    to: '/h',
-  },
-
-  {
-    label: () => 'Documents',
-    children: [
-      {
-        label: () => 'IBAN Certificate',
-        to: '/g',
-      },
-
-      {
-        label: () => 'Account Statements',
-        to: '/i',
-      },
-    ],
-  },
-  {
-    label: () => 'Log Out',
-    to: '/f',
-  },
-];
-
-const pagesleft: SidebarPage[] = [
-  {
-    label: () => 'Tranfer and Payments',
-    children: [
-      {
-        label: () => 'Transfer',
-        to: '/b',
-      },
-      {
-        label: () => 'Payments',
-        children: [
-          {
-            label: () => 'Service Payments',
-            to: '/b',
-          },
-          {
-            label: () => 'Payments to the Government',
-            to: '/c',
-          },
-          {
-            label: () => 'TELCO Payments',
-            to: '/c',
-          },
-          {
-            label: () => 'Cards',
-            to: '/c',
-          },
-        ],
-      },
-      {
-        label: () => 'Direct Debit',
-        to: '/c',
-      },
-    ],
-  },
-  {
-    label: () => 'Card Manager',
-    to: '/d',
-  },
-  {
-    label: () => 'Savings Accounts',
-    to: '/e',
-  },
-];
+import { api } from 'src/boot/axios';
 
 const transactions = [
   { id: 1, name: 'Pingo Doce', amount: -1000, time: '12:34' },
   { id: 2, name: 'Deloitte', amount: +300000, time: '10:53' },
 ];
+
+const account = ref(null);
+
+api.get('/api/accounts/').then((response) => {
+  console.log(response);
+  account.value = response.data;
+});
 
 const typeFilter = ref('none');
 
@@ -220,18 +153,9 @@ function getExpense() {
   return transactions.filter((x) => x.amount < 0);
 }
 
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
-}
-
-function toggleRightDrawer() {
-  rightDrawerOpen.value = !rightDrawerOpen.value;
-}
-
 const date = ref('2019/02/01');
 
 function onItemClick() {
   // console.log('Clicked on an Item')
 }
 </script>
-;
