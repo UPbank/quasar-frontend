@@ -4,9 +4,11 @@
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
         <q-toolbar-title class="row justify-center">
-          <q-avatar square>
-            <img src="icons/logobranco.png" />
-          </q-avatar>
+          <q-btn dense flat round to="/overview">
+            <q-avatar>
+              <img src="icons/logobranco.png" />
+            </q-avatar>
+          </q-btn>
         </q-toolbar-title>
 
         <q-btn dense flat round icon="account_circle">
@@ -66,32 +68,28 @@ const pagesLeft: SidebarPage[] = [
     children: [
       {
         label: () => 'Transfer',
-        to: '/b',
+        to: '/moneytransfers',
       },
       {
         label: () => 'Payments',
         children: [
           {
             label: () => 'Service Payments',
-            to: '/b',
+            to: '/servicepayments',
           },
           {
-            label: () => 'Payments to the Government',
-            to: '/c',
+            label: () => 'Government Payments',
+            to: '/governmentpayment',
           },
           {
             label: () => 'TELCO Payments',
-            to: '/c',
-          },
-          {
-            label: () => 'Cards',
-            to: '/c',
+            to: '/telcopayments',
           },
         ],
       },
       {
         label: () => 'Direct Debit',
-        to: '/c',
+        to: '/directdebit',
       },
     ],
   },
@@ -99,16 +97,12 @@ const pagesLeft: SidebarPage[] = [
     label: () => 'Card Manager',
     to: '/d',
   },
-  {
-    label: () => 'Savings Accounts',
-    to: '/e',
-  },
 ];
 
 const pagesRight: SidebarPage[] = [
   {
     label: () => 'Account Settings',
-    to: '/h',
+    to: '/deleteaccount',
   },
 
   {
@@ -116,7 +110,7 @@ const pagesRight: SidebarPage[] = [
     children: [
       {
         label: () => 'IBAN Certificate',
-        to: '/g',
+        to: '/ibancertificate',
       },
 
       {

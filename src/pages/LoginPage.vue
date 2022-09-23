@@ -1,6 +1,6 @@
 <template>
   <q-page class="column items-center justify-center q-gutter-y-md">
-    <q-img src="icons/favicon-128x128.png" style="max-width: 100px" />
+    <q-img src="icons/logo.png" style="max-width: 100px" />
     <span class="text-center" style="max-width: 250px">{{
       t('login.header')
     }}</span>
@@ -28,9 +28,9 @@
       <q-card-section class="q-gutter-x-md q-mt-lg">
         <q-btn :label="t('login.login')" color="primary" @click="login" />
         <q-btn
-          :label="t('login.createAccount')"
+          :label="t('login.createaccount')"
           color="primary"
-          to="/register"
+          to="/createaccount"
         />
       </q-card-section>
     </q-card>

@@ -1,29 +1,28 @@
 import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
+  //{
+  //path: '/',
+  //component: () => import('layouts/MainLayout.vue'),
+  //children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+  //},
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
-  },
-  {
-    path: '/login',
     component: () => import('layouts/SessionLayout.vue'),
     children: [{ path: '', component: () => import('pages/LoginPage.vue') }],
   },
-  {
-    path: '/teste',
-    component: () => import('layouts/SessionLayout.vue'),
-    children: [{ path: '', component: () => import('pages/TestPage.vue') }],
-  },
-  {
-    path: '/CreateAccount',
-
-    component: () => import('layouts/SessionLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/CreateAccountPage.vue') },
-    ],
-  },
+  //{
+  //path: '/teste',
+  //component: () => import('layouts/SessionLayout.vue'),
+  //children: [{ path: '', component: () => import('pages/TestPage.vue') }],
+  //},
+  //{
+  //path: '/CreateAccount',
+  //component: () => import('layouts/SessionLayout.vue'),
+  //children: [
+  //{ path: '', component: () => import('pages/CreateAccountPage.vue') },
+  //],
+  //},
   {
     path: '/overview',
     component: () => import('layouts/MainLayout.vue'),
@@ -31,28 +30,28 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
-    path: '/AccountCreation',
+    path: '/createaccount',
     component: () => import('layouts/SessionLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/AccountCreation.vue') },
+      { path: '', component: () => import('pages/CreateAccount.vue') },
     ],
   },
   {
-    path: '/DirectDebit',
+    path: '/directdebit',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/DirectDebitPage.vue') },
     ],
   },
   {
-    path: '/IbanCertificate',
+    path: '/ibancertificate',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/IbanCertificatePage.vue') },
     ],
   },
   {
-    path: '/GovernmentPayment',
+    path: '/governmentpayment',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/GovernmentPaymentPage.vue') },
@@ -60,31 +59,38 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
-    path: '/ServicePayments',
+    path: '/servicepayments',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/ServicePaymentsPage.vue') },
     ],
   },
   {
-    path: '/TelcoPayments',
+    path: '/telcopayments',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/TelcoPaymentsPage.vue') },
     ],
   },
   {
-    path: '/AccountStatement',
+    path: '/accountstatement',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/AccountStatementPage.vue') },
     ],
   },
   {
-    path: '/MoneyTransfers',
+    path: '/moneytransfers',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/MoneyTransfersPage.vue') },
+    ],
+  },
+  {
+    path: '/deleteaccount',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/DeleteAccount.vue') },
     ],
   },
 

@@ -2,14 +2,14 @@
   <q-page class="column items-center justify-center q-gutter-y-md">
     <q-img src="icons/logo.png" style="max-width: 100px" />
     <span class="text-center" style="max-width: 250px">
-      {{ t('login.header') }}
+      {{ t('createaccount.header') }}
     </span>
     <q-card>
       <q-card-section>
         <q-input
           :label="t('Full Name')"
           rounded
-          standout
+          filled
           v-model="name"
           :rules="[(v) => v.length <= 80 || t('register.maxChars')]"
           lazy-rules
@@ -18,7 +18,7 @@
         <q-input
           :label="t('Password')"
           rounded
-          standout
+          filled
           v-model="password"
           :type="isPwd ? 'password' : 'text'"
           :rules="[
@@ -37,7 +37,6 @@
           :label="t('Birthdate')"
           filled
           rounded
-          standout
           v-model="date"
           mask="date"
           :rules="['date']"
@@ -72,12 +71,12 @@
           </template>
         </q-input>
 
-        <q-input :label="t('Email')" rounded standout v-model="email" />
+        <q-input :label="t('Email')" rounded filled v-model="email" />
         <div class="q-pa-xs"></div>
         <q-input
           :label="t('First Address')"
           rounded
-          standout
+          filled
           v-model="staddress"
           :rules="[(v) => v.length <= 80 || t('register.maxChars')]"
           lazy-rules
@@ -86,26 +85,24 @@
           <q-input
             filled
             rounded
-            standout
             v-model="postalcode"
             label="Postal Code"
-            mask="#### - ###"
+            mask="####-###"
           />
         </div>
         <div class="q-pa-xs"></div>
         <q-input
           :label="t('Second Address')"
           rounded
-          standout
+          filled
           v-model="ndaddress"
           :rules="[(v) => v.length <= 80 || t('register.maxChars')]"
           lazy-rules
         />
         <div class="q-gutter-md">
           <q-input
-            filled
             rounded
-            standout
+            filled
             v-model="postalcode2"
             label="Postal Code 2"
             mask="#### - ###"
@@ -114,7 +111,7 @@
         <div class="q-pa-xs"></div>
         <q-input
           rounded
-          standout
+          filled
           v-model="phone"
           label="Phone"
           mask="+### #########"
@@ -123,7 +120,7 @@
         <q-input
           :label="t('ID Number')"
           rounded
-          standout
+          filled
           v-model="idnumber"
           mask="########"
           :rules="[(v) => v.length >= 8 || t('register.8Numbers')]"
@@ -132,7 +129,7 @@
         <q-input
           :label="t('TAX Number')"
           rounded
-          standout
+          filled
           v-model="taxnumber"
           mask="#########"
           :rules="[(v) => v.length >= 9 || t('register.9Numbers')]"
@@ -140,7 +137,7 @@
         />
         <q-card-section class="q-gutter-x-md q-mt-xs">
           <q-btn unelevated rounded color="primary" label="Sign Up" />
-          <q-btn unelevated rounded color="primary" label="Log In" />
+          <q-btn unelevated rounded color="primary" label="Log In" to="/" />
         </q-card-section>
       </q-card-section>
     </q-card>
