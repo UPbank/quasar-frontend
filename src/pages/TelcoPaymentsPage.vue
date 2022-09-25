@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-xl"></div>
-  <q-card class="text-caption full-width" size="dense" bordered>
+  <q-card class="text-caption" size="dense" bordered>
     <q-card-section padding class="column items-center">
       <div>{{ $t('TELCO Payments') }}</div>
       <div class="q-pa-md">
