@@ -119,7 +119,7 @@ const pagesRight: SidebarPage[] = [
 
       {
         label: () => 'Account Statements',
-        to: '/i',
+        to: '/accountstatement',
       },
     ],
   },
