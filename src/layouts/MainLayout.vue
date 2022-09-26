@@ -6,7 +6,7 @@
         <q-toolbar-title class="row justify-center">
           <q-btn dense flat round to="/overview">
             <q-avatar>
-              <img src="icons/logobranco.png" />
+              <img src="icons/logo_white.svg" />
             </q-avatar>
           </q-btn>
         </q-toolbar-title>
@@ -115,7 +115,7 @@ const pagesRight: SidebarPage[] = [
 
       {
         label: () => 'Account Statements',
-        to: '/i',
+        to: '/accountstatement',
       },
     ],
   },

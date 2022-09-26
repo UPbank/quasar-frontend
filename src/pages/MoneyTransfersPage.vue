@@ -8,9 +8,9 @@
         <div>
           <q-input
             outlined
-            v-model.number="IBAN"
+            v-model="iban"
             dense
-            mask="AA ## ######## ########### ##"
+            mask="AA#######################"
             style="max-width: 400px"
             maxlength="25"
           />
@@ -28,12 +28,7 @@
 
       <div>
         <div>Note</div>
-        <q-input
-          outlined
-          v-model.number="note"
-          dense
-          style="max-width: 400px"
-        />
+        <q-input outlined v-model="note" dense style="max-width: 400px" />
         <q-card-section>
           <q-btn round color="secondary" icon="upload_file" />
         </q-card-section>
@@ -45,7 +40,7 @@
         <q-expansion-item
           expand-separator
           icon="schedule"
-          label="Choose Frequency"
+          :label="t('Choose Frequency')"
         >
           <q-card>
             <q-card-section>
@@ -71,7 +66,7 @@
                           <div class="row items-center justify-end">
                             <q-btn
                               v-close-popup
-                              label="Close"
+                              :label="t('Close')"
                               color="primary"
                               flat
                             />
@@ -89,18 +84,55 @@
     </div>
 
     <q-card-section class="text-center">
-      <q-btn unelevated rounded color="primary" label="Continue" />
+      <q-btn
+        unelevated
+        rounded
+        color="primary"
+        :label="t('Continue')"
+        @click="send()"
+      />
     </q-card-section>
   </q-card>
 </template>
 
 <script setup lang="ts">
+import { useQuasar } from 'quasar';
+import { api } from 'src/boot/axios';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
-const IBAN = ref(null as null | number);
+const { t } = useI18n();
+const $q = useQuasar();
+const $router = useRouter();
+
+const iban = ref(null as null | string);
 const amount = ref(null as null | number);
 const note = ref(null as null | string);
 const options = [null, 'Every Week', 'Every Month', 'Every Year'];
 const operator = ref(null as null | number);
 const date = ref('2019/02/01');
+
+async function send() {
+  if (iban.value == null) return;
+  if (amount.value == null) return;
+  try {
+    await api.post('/api/transfers/bankTransfers/', {
+      amount: amount.value * 100,
+      note: note.value,
+      iban: iban.value.replace(' ', ''),
+    });
+
+    $q.notify({
+      message: 'Transfer sent successfuly',
+      color: 'positive',
+    });
+    $router.push('/overview');
+  } catch {
+    $q.notify({
+      message: 'Error',
+      color: 'negative',
+    });
+  }
+}
 </script>

@@ -38,15 +38,44 @@
 </template>
 
 <script setup lang="ts">
+import { useQuasar } from 'quasar';
+import { api } from 'src/boot/axios';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
 const { t } = useI18n();
 const email = ref('');
 const password = ref('');
 const isPwd = ref(true);
+const $q = useQuasar();
+const $router = useRouter();
 
-function login() {
-  alert('método');
+async function login() {
+  //success
+  try {
+    const result = await api.post('/authenticate', {
+      email: email.value,
+      password: password.value,
+    });
+    api.interceptors.request.use((config) => {
+      config.headers.Authorization = `Bearer ${result.data['accessToken']}`;
+      return config;
+    });
+    $router.push('/overview');
+
+    $q.notify({
+      message: t('Successful Login'),
+      color: 'positive',
+    });
+    $router.push('/overview');
+
+    // error useI18n()
+  } catch {
+    $q.notify({
+      message: t('Incorrect username or password'),
+      color: 'negative',
+    });
+  }
 }
 </script>
