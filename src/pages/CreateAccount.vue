@@ -104,7 +104,7 @@
             rounded
             filled
             v-model="postalcode2"
-            label="Postal Code 2"
+            :label="t('Postal Code 2')"
             mask="#### - ###"
           />
         </div>
@@ -113,7 +113,7 @@
           rounded
           filled
           v-model="phone"
-          label="Phone"
+          :label="t('Phone')"
           mask="+### #########"
         />
         <div class="q-pa-xs"></div>

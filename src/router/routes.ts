@@ -1,28 +1,11 @@
 import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
-  //{
-  //path: '/',
-  //component: () => import('layouts/MainLayout.vue'),
-  //children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
-  //},
   {
     path: '/',
     component: () => import('layouts/SessionLayout.vue'),
     children: [{ path: '', component: () => import('pages/LoginPage.vue') }],
   },
-  //{
-  //path: '/teste',
-  //component: () => import('layouts/SessionLayout.vue'),
-  //children: [{ path: '', component: () => import('pages/TestPage.vue') }],
-  //},
-  //{
-  //path: '/CreateAccount',
-  //component: () => import('layouts/SessionLayout.vue'),
-  //children: [
-  //{ path: '', component: () => import('pages/CreateAccountPage.vue') },
-  //],
-  //},
   {
     path: '/overview',
     component: () => import('layouts/MainLayout.vue'),
@@ -91,6 +74,20 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/DeleteAccount.vue') },
+    ],
+  },
+  {
+    path: '/CardManager',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/CardManagerPage.vue') },
+    ],
+  },
+  {
+    path: '/transfers',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/TransfersPage.vue') },
     ],
   },
 

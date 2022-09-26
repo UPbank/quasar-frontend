@@ -87,7 +87,7 @@
       </q-card-section>
     </q-card>
   </div>
-  <span class="text-caption full-width" style="max-width: 400px"> 30 ago</span>
+  <span class="text-caption full-width" style="max-width: 401px"> 30 ago</span>
   <transfer-item
     v-for="transaction in filteredTransactions"
     :name="transaction.name"
@@ -97,6 +97,7 @@
     ).toFixed(2)} €`"
     :time="transaction.time"
   />
+
 </template>
 
 <script setup lang="ts">
@@ -107,6 +108,7 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 const transactions = [
+
   { id: 1, name: 'Pingo Doce', amount: -1000, time: '12:34' },
   { id: 2, name: 'Deloitte', amount: +300000, time: '10:53' },
 ];
