@@ -95,7 +95,7 @@ const pagesLeft: SidebarPage[] = [
   },
   {
     label: () => 'Card Manager',
-    to: '/d',
+    to: '/cardmanager',
   },
 ];
 
