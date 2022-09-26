@@ -66,7 +66,7 @@ async function login() {
     $router.push('/overview');
 
     $q.notify({
-      message: t('Successful Login'),
+      message: t('login.succesful'),
       color: 'positive',
     });
     $router.push('/overview');
