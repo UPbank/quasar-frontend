@@ -170,6 +170,8 @@ const taxnumber = ref('');
 const postalcode = ref('');
 const postalcode2 = ref('');
 const phone = ref('');
+const city = ref('');
+const district = ref('');
 const isPwd = ref(true);
 const $q = useQuasar();
 const $router = useRouter();
@@ -196,15 +198,19 @@ function isOver18(birthday: string) {
 async function createAccount() {
   try {
     const result = await api.post('/register', {
-      name: name.value,
       email: email.value,
       password: password.value,
-      date: date.value,
-      address: staddress.value + ndaddress.value,
-      postalcode: postalcode.value + postalcode2.value,
-      id: idnumber.value,
-      Nif: taxnumber.value,
-      phone: phone.value,
+      fullName: name.value,
+      birthDate: date.value,
+      taxNumber: taxnumber.value,
+      idNumber: idnumber.value,
+      address: {
+        line1: staddress.value,
+        line2: ndaddress.value,
+        zipCode: postalcode.value,
+        city: city.value,
+        district: district.value,
+      },
     });
     api.interceptors.request.use((config) => {
       config.headers.Authorization = `Bearer ${result.data['accessToken']}`;
