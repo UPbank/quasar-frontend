@@ -76,11 +76,13 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => import('pages/DeleteAccount.vue') },
     ],
   },
-    {
+  {
     path: '/CardManager',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/CardManagerPage.vue') },
+    ],
+  },
   {
     path: '/transfers',
     component: () => import('layouts/MainLayout.vue'),
