@@ -38,6 +38,7 @@
 </template>
 
 <script setup lang="ts">
+import { AxiosError } from 'axios';
 import { useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { ref } from 'vue';
@@ -70,12 +71,20 @@ async function login() {
     });
     $router.push('/overview');
 
-    // error useI18n()
-  } catch {
-    $q.notify({
-      message: t('Incorrect username or password'),
-      color: 'negative',
-    });
+    //error
+  } catch (e) {
+    console.log(e);
+    if ((e as AxiosError).response?.status === 401) {
+      $q.notify({
+        message: t('login.incorrect'),
+        color: 'negative',
+      });
+    } else {
+      $q.notify({
+        message: t('error.general'),
+        color: 'negative',
+      });
+    }
   }
 }
 </script>
