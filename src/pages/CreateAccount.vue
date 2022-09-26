@@ -201,7 +201,7 @@ async function createAccount() {
       email: email.value,
       password: password.value,
       fullName: name.value,
-      birthDate: date.value,
+      birthdate: date.value,
       taxNumber: taxnumber.value,
       idNumber: idnumber.value,
       address: {
