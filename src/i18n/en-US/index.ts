@@ -13,6 +13,10 @@ export default {
   },
   createaccount: {
     header: 'Log in or create a new account to access your account',
+    address: 'Address',
+    maxChars: 'Please use maximum 255 characters',
+    eightNumbers: 'ID Number must be 8 digits or longer',
+    nineNumbers: 'Tax Number must be 9 digits or longer',
   },
   deleteaccount: {
     header: 'Danger zone',
