@@ -6,13 +6,9 @@
         <q-toolbar-title class="row justify-center">
           <q-btn dense flat round to="/overview">
             <q-avatar>
-              <img src="icons/logobranco.png" />
+              <img src="icons/logo_white.svg" />
             </q-avatar>
           </q-btn>
-
-          <q-avatar square>
-            <img src="icons/logo_white.svg" />
-          </q-avatar>
         </q-toolbar-title>
 
         <q-btn dense flat round icon="account_circle">
