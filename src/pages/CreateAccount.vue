@@ -136,7 +136,13 @@
           lazy-rules
         />
         <q-card-section class="q-gutter-x-md q-mt-xs">
-          <q-btn unelevated rounded color="primary" label="Sign Up" />
+          <q-btn
+            :label="t('create')"
+            unelevated
+            rounded
+            color="primary"
+            @click="createAccount"
+          />
           <q-btn unelevated rounded color="primary" label="Log In" to="/" />
         </q-card-section>
       </q-card-section>
@@ -145,14 +151,17 @@
 </template>
 
 <script setup lang="ts">
+import { AxiosError } from 'axios';
+import { useQuasar } from 'quasar';
+import { api } from 'src/boot/axios';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
 const { t } = useI18n();
 const name = ref('');
 const email = ref('');
 const password = ref('');
-const isPwd = ref(true);
 const date = ref('');
 const staddress = ref('');
 const ndaddress = ref('');
@@ -161,12 +170,12 @@ const taxnumber = ref('');
 const postalcode = ref('');
 const postalcode2 = ref('');
 const phone = ref('');
+const isPwd = ref(true);
+const $q = useQuasar();
+const $router = useRouter();
 // function login() {
 //   alert('teste');Postalcode
 // }
-function onItemClick() {
-  alert('Conta criada');
-}
 
 function isOver18(birthday: string) {
   const now = new Date();
@@ -182,5 +191,44 @@ function isOver18(birthday: string) {
 
   const validDay = now.getDate();
   return day <= validDay;
+}
+
+async function createAccount() {
+  try {
+    const result = await api.post('/register', {
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      date: date.value,
+      address: staddress.value + ndaddress.value,
+      postalcode: postalcode.value + postalcode2.value,
+      id: idnumber.value,
+      Nif: taxnumber.value,
+      phone: phone.value,
+    });
+    api.interceptors.request.use((config) => {
+      config.headers.Authorization = `Bearer ${result.data['accessToken']}`;
+      return config;
+    });
+    $router.push('/');
+
+    $q.notify({
+      message: t('account.created'),
+      color: 'positive',
+    });
+  } catch (e) {
+    console.log(e);
+    if ((e as AxiosError).response?.status === 401) {
+      $q.notify({
+        message: t('account.not.created'),
+        color: 'negative',
+      });
+    } else {
+      $q.notify({
+        message: t('error.general'),
+        color: 'negative',
+      });
+    }
+  }
 }
 </script>
