@@ -141,8 +141,8 @@
         />
 
         <q-card-section class="q-gutter-x-md q-mt-xs">
-          <q-btn color="primary" label="Sign Up" />
-          <q-btn outline color="primary" label="Log In" to="/" />
+          <q-btn :label="t('login.createaccount')" color="primary" />
+          <q-btn :label="t('login.login')" outline color="primary" to="/" />
         </q-card-section>
       </q-card-section>
     </q-card>

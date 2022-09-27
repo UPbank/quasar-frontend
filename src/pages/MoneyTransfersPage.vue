@@ -9,10 +9,10 @@
           <q-input
             outlined
             v-model="iban"
+            :rules="[(val) => validateIBAN(val) || 'Must be a valid IBAN.']"
             dense
-            mask="AA#######################"
             style="max-width: 400px"
-            maxlength="25"
+            lazy-rules
           />
         </div>
         <div>Amount</div>
@@ -134,5 +134,9 @@ async function send() {
       color: 'negative',
     });
   }
+}
+
+function validateIBAN(iban: string): boolean {
+  return /^PT\d{23}$/.test(iban);
 }
 </script>
