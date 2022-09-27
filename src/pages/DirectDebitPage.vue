@@ -15,7 +15,7 @@
             v-model="props.row.active"
             checked-icon="check"
             unchecked-icon="clear"
-            @change="toggleDirectDebit(props.row)"
+            @update:model-value="toggleDirectDebit(props.row)"
           />
         </q-td>
       </template>
@@ -84,13 +84,11 @@ api
 
 async function toggleDirectDebit(debit: Record<string, unknown>) {
   try {
-    debit.active = !debit.active;
-    await api.put(`/api/directDebits/${debit.id}`, debit);
+    await api.put(`/api/directDebits/${debit.id}`, { active: debit.active });
     $q.notify({
-      message: t('directDebit.changed'),
+      message: t(`directDebit.${debit.active ? 'activated' : 'deactivated'}`),
       color: 'positive',
     });
-    $router.push('/overview');
   } catch (e) {
     console.log(e);
     $q.notify({
