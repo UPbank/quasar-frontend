@@ -226,7 +226,17 @@ async function createAccount() {
     console.log(e);
     if ((e as AxiosError).response?.status === 401) {
       $q.notify({
-        message: t('account.not.created'),
+        message: t('email.invalid'),
+        color: 'negative',
+      });
+    } else if ((e as AxiosError).response?.status === 402) {
+      $q.notify({
+        message: t('register.taken'),
+        color: 'negative',
+      });
+    } else if ((e as AxiosError).response?.status === 403) {
+      $q.notify({
+        message: t('zip-code.invalid'),
         color: 'negative',
       });
     } else {
