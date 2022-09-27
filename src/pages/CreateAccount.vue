@@ -7,22 +7,17 @@
     <q-card>
       <q-card-section>
         <q-input
-          :label="t('Full Name')"
-          rounded
-          filled
-          v-model="name"
-          :rules="[(v) => v.length <= 80 || t('register.maxChars')]"
-          lazy-rules
-        />
-
+          label="Email *"
+          v-model="email"
+          :rules="[(val) => validateEmail(val) || 'Must be a valid email.']"
+        ></q-input>
         <q-input
-          :label="t('Password')"
-          rounded
-          filled
+          :label="t('Password *')"
           v-model="password"
           :type="isPwd ? 'password' : 'text'"
           :rules="[
             (v) => v.length >= 8 || 'Password must be 8 digits or longer',
+            (v) => v.length <= 255 || t('createaccount.maxChars'),
           ]"
           lazy-rules
         >
@@ -34,10 +29,18 @@
             /> </template
         ></q-input>
         <q-input
+          :label="t('Full Name *')"
+          v-model="fullName"
+          :rules="[
+            (v) => v.length <= 255 || t('createaccount.maxChars'),
+            (val) => (val && val.length > 0) || 'Name must be filled in.',
+          ]"
+          lazy-rules
+        />
+
+        <q-input
           :label="t('Birthdate')"
-          filled
-          rounded
-          v-model="date"
+          v-model="birthdate"
           mask="date"
           :rules="['date']"
         >
@@ -51,7 +54,7 @@
                 <q-date
                   rounded
                   standout
-                  v-model="date"
+                  v-model="birthdate"
                   dense
                   :options="isOver18"
                 >
@@ -71,73 +74,75 @@
           </template>
         </q-input>
 
-        <q-input :label="t('Email')" rounded filled v-model="email" />
+        <q-input
+          :label="t('Tax Number')"
+          v-model="taxNumber"
+          mask="#########"
+          :rules="[
+            (v) => v.length >= 9 || t('createaccount.nineNumbers'),
+            (v) => v.length <= 255 || t('createaccount.maxChars'),
+          ]"
+          lazy-rules
+        />
+        <q-input
+          :label="t('ID Number')"
+          v-model="idNumber"
+          mask="########"
+          :rules="[
+            (v) => v.length >= 8 || t('createaccount.eightNumbers'),
+            (v) => v.length <= 255 || t('createaccount.maxChars'),
+          ]"
+          lazy-rules
+        />
+
+        <span class="text-center" style="max-width: 250px">
+          {{ t('createaccount.address') }}
+        </span>
         <div class="q-pa-xs"></div>
         <q-input
-          :label="t('First Address')"
-          rounded
-          filled
-          v-model="staddress"
-          :rules="[(v) => v.length <= 80 || t('register.maxChars')]"
+          :label="t('Address line 1')"
+          v-model="line1"
+          :rules="[(v) => v.length <= 255 || t('createaccount.maxChars')]"
+          lazy-rules
+        />
+        <q-input
+          :label="t('Address line 2')"
+          v-model="line2"
+          :rules="[(v) => v.length <= 255 || t('createaccount.maxChars')]"
           lazy-rules
         />
         <div class="q-gutter-md">
           <q-input
-            filled
-            rounded
-            v-model="postalcode"
-            label="Postal Code"
+            :label="t('Postal Code')"
+            v-model="zipCode"
             mask="####-###"
           />
         </div>
         <div class="q-pa-xs"></div>
+
         <q-input
-          :label="t('Second Address')"
-          rounded
-          filled
-          v-model="ndaddress"
-          :rules="[(v) => v.length <= 80 || t('register.maxChars')]"
+          :label="t('City *')"
+          v-model="city"
+          :rules="[
+            (v) => v.length <= 255 || t('createaccount.maxChars'),
+            (val) => (val && val.length > 0) || 'Name must be filled in.',
+          ]"
           lazy-rules
         />
-        <div class="q-gutter-md">
-          <q-input
-            rounded
-            filled
-            v-model="postalcode2"
-            :label="t('Postal Code 2')"
-            mask="#### - ###"
-          />
-        </div>
-        <div class="q-pa-xs"></div>
+
         <q-input
-          rounded
-          filled
-          v-model="phone"
-          :label="t('Phone')"
-          mask="+### #########"
-        />
-        <div class="q-pa-xs"></div>
-        <q-input
-          :label="t('ID Number')"
-          rounded
-          filled
-          v-model="idnumber"
-          mask="########"
-          :rules="[(v) => v.length >= 8 || t('register.8Numbers')]"
+          :label="t('District *')"
+          v-model="district"
+          :rules="[
+            (v) => v.length <= 255 || t('createaccount.maxChars'),
+            (val) => (val && val.length > 0) || 'Name must be filled in.',
+          ]"
           lazy-rules
         />
-        <q-input
-          :label="t('TAX Number')"
-          rounded
-          filled
-          v-model="taxnumber"
-          mask="#########"
-          :rules="[(v) => v.length >= 9 || t('register.9Numbers')]"
-          lazy-rules
-        />
+
         <q-card-section class="q-gutter-x-md q-mt-xs">
-          <q-btn unelevated rounded color="primary" label="Sign Up" />
-          <q-btn unelevated rounded color="primary" label="Log In" to="/" />
+          <q-btn :label="t('login.createaccount')" color="primary" />
+          <q-btn :label="t('login.login')" outline color="primary" to="/" />
         </q-card-section>
       </q-card-section>
     </q-card>
@@ -149,18 +154,18 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
-const name = ref('');
-const email = ref('');
-const password = ref('');
+const email = ref(null as null | string);
+const password = ref(null as null | string);
 const isPwd = ref(true);
-const date = ref('');
-const staddress = ref('');
-const ndaddress = ref('');
-const idnumber = ref('');
-const taxnumber = ref('');
-const postalcode = ref('');
-const postalcode2 = ref('');
-const phone = ref('');
+const fullName = ref(null as null | string);
+const birthdate = ref('2000-01-01');
+const taxNumber = ref(null as null | string);
+const idNumber = ref(null as null | string);
+const line1 = ref(null as null | string);
+const line2 = ref(null as null | string);
+const zipCode = ref(null as null | string);
+const city = ref(null as null | string);
+const district = ref(null as null | string);
 // function login() {
 //   alert('teste');Postalcode
 // }
@@ -182,5 +187,9 @@ function isOver18(birthday: string) {
 
   const validDay = now.getDate();
   return day <= validDay;
+}
+
+function validateEmail(email: string): boolean {
+  return /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(email);
 }
 </script>
