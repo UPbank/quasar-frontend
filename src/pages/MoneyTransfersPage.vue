@@ -5,16 +5,14 @@
       <div>Transfer Data</div>
       <div class="q-pa-md">
         <div>IBAN</div>
-        <div>
-          <q-input
-            outlined
-            v-model="iban"
-            :rules="[(val) => validateIBAN(val) || 'Must be a valid IBAN.']"
-            dense
-            style="max-width: 400px"
-            lazy-rules
-          />
-        </div>
+        <q-input
+          outlined
+          v-model="iban"
+          :rules="[(val) => validateIBAN(val) || 'Must be a valid IBAN.']"
+          dense
+          style="max-width: 400px"
+          lazy-rules
+        />
         <div>Amount</div>
         <q-input
           outlined
@@ -22,65 +20,24 @@
           dense
           style="max-width: 400px"
           suffix="€"
+          :rules="[(v) => v > 0 || 'Must be positive']"
           lazy-rules
         />
-      </div>
 
-      <div>
         <div>Note</div>
         <q-input outlined v-model="note" dense style="max-width: 400px" />
-        <q-card-section>
-          <q-btn round color="secondary" icon="upload_file" />
-        </q-card-section>
       </div>
     </q-card-section>
 
     <div class="q-pa-md" style="max-width: 350px">
-      <q-list bordered class="rounded-borders">
-        <q-expansion-item
-          expand-separator
-          icon="schedule"
-          :label="t('Choose Frequency')"
-        >
-          <q-card>
-            <q-card-section>
-              <div class="q-pa-md">
-                <div>Frequency</div>
-                <div class="q-gutter-xl">
-                  <q-select filled v-model="operator" :options="options" />
-                </div>
-              </div>
-            </q-card-section>
-
-            <q-card-section class="row">
-              <div class="q-pa-md" style="max-width: 300px">
-                <q-input filled v-model="date" mask="date" :rules="['date']">
-                  <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-date v-model="date">
-                          <div class="row items-center justify-end">
-                            <q-btn
-                              v-close-popup
-                              :label="t('Close')"
-                              color="primary"
-                              flat
-                            />
-                          </div>
-                        </q-date>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-              </div>
-            </q-card-section>
-          </q-card>
-        </q-expansion-item>
-      </q-list>
+      <q-toggle label="Make this a standing order" v-model="standingOrder" />
+      <q-select
+        v-if="standingOrder"
+        label="Frequency"
+        filled
+        v-model="operator"
+        :options="options"
+      />
     </div>
 
     <q-card-section class="text-center">
@@ -111,11 +68,12 @@ const amount = ref(null as null | number);
 const note = ref(null as null | string);
 const options = [null, 'Every Week', 'Every Month', 'Every Year'];
 const operator = ref(null as null | number);
-const date = ref('2019/02/01');
+const standingOrder = ref(false);
 
 async function send() {
   if (iban.value == null) return;
   if (amount.value == null) return;
+
   try {
     await api.post('/api/transfers/bankTransfers/', {
       amount: amount.value * 100,
@@ -127,6 +85,14 @@ async function send() {
       message: 'Transfer sent successfuly',
       color: 'positive',
     });
+    if (standingOrder.value) {
+      // parte da ana
+      // try catch novo com os erros da criação da standing order
+      //vasempre fazer a trasnferencia, mas só se for standing order é que entra aqui e é que vai agendar
+      //TODO
+      //fazer issue para a paginação da standing order
+      //fazer issue para o PUT do standing order
+    }
     $router.push('/overview');
   } catch {
     $q.notify({
