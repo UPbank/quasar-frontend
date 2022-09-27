@@ -2,11 +2,12 @@
   <div>
     <q-table
       :title="t('Direct Debit')"
-      :rows="rows"
+      :rows="rows || []"
       :columns="columns"
       row-key="name"
       :pagination="initialPagination"
       hide-pagination
+      :loading="rows == null"
     >
       <template v-slot:body-cell-active="props">
         <q-td :props="props">
@@ -14,6 +15,7 @@
             v-model="props.row.active"
             checked-icon="check"
             unchecked-icon="clear"
+            @click="toggleDirectDebit(props.row)"
           />
         </q-td>
       </template>
@@ -26,10 +28,14 @@
 </template>
 
 <script setup lang="ts">
+import { AxiosError } from 'axios';
+import { useQuasar } from 'quasar';
+import { api } from 'src/boot/axios';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
+const $q = useQuasar();
 
 const initialPagination = {
   rowsPerPage: 0,
@@ -71,61 +77,35 @@ const columns = [
   },
 ];
 
-const rows = ref([
-  {
-    name: 'John Doe',
-    inicialdate: '2021/01/01',
-    frequency: 'Monthly',
-    amount: 1000,
-    active: true,
-  },
-  {
-    name: 'Jane Doe',
-    inicialdate: '2020/12/30',
-    frequency: 'Weekly',
-    amount: 500,
-  },
-  {
-    name: 'UALG Propinas',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'TMN',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'OPTIMUS',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'Freedy Kruger',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'Freedy Kruger2',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'Freedy Kruger3',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'Freedy Kruger4',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-]);
+const rows = ref(null as null | []);
+
+api
+  .get('/api/directDebits')
+  .then((response) => {
+    rows.value = response.data.content;
+  })
+  .catch((error) => {
+    $q.notify({ message: t('directDebit.error'), color: 'negative' });
+    rows.value = [];
+  });
+
+async function toggleDirectDebit(debit: Record<string, unknown>) {
+  try {
+    debit.active = !debit.active;
+    await api.put(`/api/directDebits/${debit.id}`, debit);
+  } catch (e) {
+    console.log(e);
+    if ((e as AxiosError).response?.status === 401) {
+      $q.notify({
+        message: t('login.incorrect'),
+        color: 'negative',
+      });
+    } else {
+      $q.notify({
+        message: t('error.general'),
+        color: 'negative',
+      });
+    }
+  }
+}
 </script>
