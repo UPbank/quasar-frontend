@@ -70,6 +70,7 @@
                       rounded
                       color="primary"
                       :label="t('Continue')"
+                      @click="scheduling()"
                     />
 
                     <q-btn
@@ -77,6 +78,7 @@
                       rounded
                       color="negative"
                       :label="t('Delete')"
+                      @click="deleteScheduled()"
                     />
                   </q-card-section>
                 </q-card-section>
@@ -90,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
+import { date, useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -102,6 +104,8 @@ const options = [null, 'Every Week', 'Every Month', 'Every Year'];
 const operator = ref(null as null | number);
 const amount = ref(null as null | number);
 const text = ref('');
+const iban = ref(null as null | string);
+const receiverIban = ref(null as null | string);
 const date = ref('2019/02/01');
 const initialPagination = {
   rowsPerPage: 0,
@@ -150,6 +154,103 @@ api
     $q.notify({ message: t('standingOrders.error'), color: 'negative' });
     rows.value = [];
   });
+
+
+api
+  //.post('/api/moneyTransfers/')
+  async function scheduling() {
+  if (iban.value == null) return;
+  if (amount.value == null) return;
+  try {
+    await api.post('/api/moneyTransfers/', {
+      amount: amount.value * 100,
+      frequency: frequency.value,
+    //note: note.value, OPTIONAL
+      date:date.value;
+      receiverIban: receiverIban.value.replace(' ', ''),
+    });
+    // api.interceptors.request.use((config) => {
+    //   config.headers.Authorization = `Bearer ${result.data['accessToken']}`;
+    //   return config;
+    // });
+    // .then((request) => {
+    // rows.value = request.data.content;
+
+
+    $q.notify({
+      message: 'Standing order successful',
+      color: 'positive',
+    });
+
+    //$router.push('/standingOrder');
+  } catch {
+    $q.notify({
+      message: 'standingOrders.error',
+      color: 'negative',
+      rows.value = [];
+    });
+  }
+
+
+  try {
+    async function schedulingAlteration() {
+    if (iban.value == null) return;
+    if (amount.value == null) return;
+    .put('/api/standingOrders/{id}',
+      amount: amount.value * 100,
+      note: note.value,
+      date: date.value,
+      iban: iban.value.replace(' ', ''),
+    });
+
+    .then((request) => {
+      rows.value = request.data.content;
+    })
+
+    $q.notify({
+    message: t('Alteration successful'),
+    color: 'positive' });
+    rows.value = [];
+
+    .catch((error) => {
+      $q.notify({ message: t('standingOrders.error'),
+      color: 'negative' });
+      rows.value = [];
+    });
+
+api
+  async function deleteScheduled() {
+  if (iban.value == null) return;
+  if (amount.value == null) return;
+  .delete('/api/standingOrders/{id}')
+
+  .then((request) => {
+    rows.value = request.data.content;
+  })
+
+  $q.notify({
+    message: t('Deleted successfully'), color: 'positive'
+   });
+    rows.value = [];
+
+    $router.push('/standingOrder');
+
+  .catch((error) => {
+    $q.notify({ message: t('standingOrder.error'),
+    color: 'negative' });
+    rows.value = [];
+  });
+
+
+
+
+//Criar um botao de delete
+
+//mandar o delete para o backend - ver
+
+
+
+
 
 const rows = ref(null as null | []);
 </script>
