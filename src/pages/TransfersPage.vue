@@ -30,7 +30,11 @@
               <q-card style="min-height: 400px">
                 <q-card-section style="width: 200px">
                   <div>{{ $t('Frequency') }}</div>
-                  <q-select filled v-model="operator" :options="options" />
+                  <q-select
+                    filled
+                    v-model="operator"
+                    :options="frequencyOptions"
+                  />
                   <div>
                     <div>{{ $t('Note') }}</div>
                     <q-input filled v-model="text"></q-input>
@@ -77,6 +81,7 @@
                       rounded
                       color="negative"
                       :label="t('Delete')"
+                      @click="deleteScheduled()"
                     />
                   </q-card-section>
                 </q-card-section>
@@ -90,7 +95,9 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
+import { AxiosError } from 'axios';
+import { text } from 'body-parser';
+import { date, useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -98,11 +105,8 @@ const { t } = useI18n();
 
 const $q = useQuasar();
 
-const options = [null, 'Every Week', 'Every Month', 'Every Year'];
-const operator = ref(null as null | number);
-const amount = ref(null as null | number);
-const text = ref('');
-const date = ref('2019/02/01');
+const rows = ref(null as null | []);
+
 const initialPagination = {
   rowsPerPage: 0,
 };
@@ -110,7 +114,6 @@ const columns = [
   {
     label: () => t('Change'),
   },
-
   {
     name: 'name',
     required: true,
@@ -146,10 +149,30 @@ api
   .then((response) => {
     rows.value = response.data.content;
   })
-  .catch((error) => {
-    $q.notify({ message: t('standingOrders.error'), color: 'negative' });
+  .catch((e) => {
+    $q.notify({
+      message: t('standingOrders.error'),
+      color: 'negative',
+    });
     rows.value = [];
   });
 
-const rows = ref(null as null | []);
+async function deleteScheduled(id: number) {
+  try {
+    api.delete(`/api/standingOrders/${id}`).then((request) => {
+      rows.value = rows.value?.filter((x) => x.id != id);
+
+      $q.notify({
+        message: t('Deleted successfully'),
+        color: 'positive',
+      });
+    });
+  } catch (e) {
+    console.log(e);
+    $q.notify({
+      message: t('Failed to delete'),
+      color: 'negative',
+    });
+  }
+}
 </script>

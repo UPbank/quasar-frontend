@@ -37,7 +37,7 @@
       </q-card-section>
       <q-card-section class="row">
         <div class="q-pa-md" style="max-width: 300px">
-          <q-input filled v-model="date" mask="date" :rules="['date']">
+          <q-input filled v-model="startDate" mask="date" :rules="['date']">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy
@@ -45,7 +45,7 @@
                   transition-show="scale"
                   transition-hide="scale"
                 >
-                  <q-date v-model="date">
+                  <q-date v-model="startDate">
                     <div class="row items-center justify-end">
                       <q-btn
                         v-close-popup
@@ -61,7 +61,7 @@
           </q-input>
         </div>
         <div class="q-pa-md" style="max-width: 300px">
-          <q-input filled v-model="date" mask="date" :rules="['date']">
+          <q-input filled v-model="startDate" mask="date" :rules="['date']">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy
@@ -69,7 +69,7 @@
                   transition-show="scale"
                   transition-hide="scale"
                 >
-                  <q-date v-model="date">
+                  <q-date v-model="startDate">
                     <div class="row items-center justify-end">
                       <q-btn
                         v-close-popup
@@ -111,9 +111,11 @@
       </div>
     </template>
   </q-infinite-scroll>
+  <span v-if="!hasMorePages">No more transactions</span>
 </template>
 
 <script setup lang="ts">
+import { AxiosError } from 'axios';
 import { computed, ref } from 'vue';
 import TransferItem from 'src/components/TransferItem.vue';
 import { api } from 'src/boot/axios';
@@ -144,22 +146,37 @@ const options = [
   },
   {
     label: 'Income',
-    value: 'income',
+    value: 'INCOME',
   },
   {
     label: 'Expense',
-    value: 'expense',
+    value: 'EXPENSE',
   },
 ];
 
-const date = ref('2019/02/01');
+const startDate = ref('2019/02/01');
+const endDate = ref('2019/02/01');
 
-// TODO Filter
-
+function getSymbol(currString: string) {
+  return currString + (currString == '' ? '?' : '&');
+}
 const queryString = computed(() => {
-  if (typeFilter.value == 'none' && filter.value == '') return '?page=';
+  let result = '';
+  if (typeFilter.value != 'none') {
+    result = `${getSymbol(result)}type=${typeFilter.value}`;
+  }
+  if (filter.value != '') {
+    result = `${getSymbol(result)}fromTo=${filter.value}`;
+  }
 
-  return '';
+  if (startDate.value != '') {
+    result = `${getSymbol(result)}minDate=${startDate.value}`;
+  }
+  if (startDate.value != '') {
+    result = `${getSymbol(result)}maxDate=${endDate.value}`;
+  }
+  result = `${getSymbol(result)}page=`;
+  return result;
 });
 
 async function onLoad(page: number, callback: () => void) {
@@ -172,15 +189,16 @@ async function onLoad(page: number, callback: () => void) {
     if (response.data.page + 1 >= response.data.totalPages) {
       hasMorePages.value = false;
     }
-    console.log('test');
     callback();
   } catch (error) {
-    $q.notify({
-      message: 'You have no more transactions',
-      color: 'negative',
-    });
     hasMorePages.value = false;
     callback();
+    if ((error as AxiosError).response?.status === 401) {
+      $q.notify({
+        message: t('registration.access.denied'),
+        color: 'negative',
+      });
+    }
   }
 }
 </script>

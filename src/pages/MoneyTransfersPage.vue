@@ -5,16 +5,14 @@
       <div>Transfer Data</div>
       <div class="q-pa-md">
         <div>IBAN</div>
-        <div>
-          <q-input
-            outlined
-            v-model="iban"
-            :rules="[(val) => validateIBAN(val) || 'Must be a valid IBAN.']"
-            dense
-            style="max-width: 400px"
-            lazy-rules
-          />
-        </div>
+        <q-input
+          outlined
+          v-model="iban"
+          :rules="[(val) => validateIBAN(val) || 'Must be a valid IBAN.']"
+          dense
+          style="max-width: 400px"
+          lazy-rules
+        />
         <div>Amount</div>
         <q-input
           outlined
@@ -22,65 +20,26 @@
           dense
           style="max-width: 400px"
           suffix="€"
+          :rules="[(v) => v > 0 || 'Must be positive']"
           lazy-rules
         />
-      </div>
 
-      <div>
         <div>Note</div>
         <q-input outlined v-model="note" dense style="max-width: 400px" />
-        <q-card-section>
-          <q-btn round color="secondary" icon="upload_file" />
-        </q-card-section>
       </div>
     </q-card-section>
 
     <div class="q-pa-md" style="max-width: 350px">
-      <q-list bordered class="rounded-borders">
-        <q-expansion-item
-          expand-separator
-          icon="schedule"
-          :label="t('Choose Frequency')"
-        >
-          <q-card>
-            <q-card-section>
-              <div class="q-pa-md">
-                <div>Frequency</div>
-                <div class="q-gutter-xl">
-                  <q-select filled v-model="operator" :options="options" />
-                </div>
-              </div>
-            </q-card-section>
-
-            <q-card-section class="row">
-              <div class="q-pa-md" style="max-width: 300px">
-                <q-input filled v-model="date" mask="date" :rules="['date']">
-                  <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-date v-model="date">
-                          <div class="row items-center justify-end">
-                            <q-btn
-                              v-close-popup
-                              :label="t('Close')"
-                              color="primary"
-                              flat
-                            />
-                          </div>
-                        </q-date>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-              </div>
-            </q-card-section>
-          </q-card>
-        </q-expansion-item>
-      </q-list>
+      <q-toggle label="Make this a standing order" v-model="standingOrder" />
+      <q-select
+        v-if="standingOrder"
+        label="Frequency"
+        filled
+        v-model="operator"
+        :options="frequencyOptions"
+        emit-value
+        map-options
+      />
     </div>
 
     <q-card-section class="text-center">
@@ -95,12 +54,43 @@
   </q-card>
 </template>
 
+<script>
+export default {
+  setup() {
+    return {
+      model: ref(null),
+
+      frequencyOptions: [
+        {
+          label: 'Daily',
+          value: 'DAILY',
+        },
+        {
+          label: 'Weekly',
+          value: 'WEEKLY',
+        },
+        {
+          label: 'Monthly',
+          value: 'MONTHLY',
+        },
+        {
+          label: 'Yearly',
+          value: 'YEARLY',
+          disable: true,
+        },
+      ],
+    };
+  },
+};
+</script>
+
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { AxiosError } from 'axios';
 
 const { t } = useI18n();
 const $q = useQuasar();
@@ -109,13 +99,14 @@ const $router = useRouter();
 const iban = ref(null as null | string);
 const amount = ref(null as null | number);
 const note = ref(null as null | string);
-const options = [null, 'Every Week', 'Every Month', 'Every Year'];
+//const frequencyOptions = [null, 'Every Week', 'Every Month', 'Every Year'];
 const operator = ref(null as null | number);
-const date = ref('2019/02/01');
+const standingOrder = ref(false);
 
 async function send() {
   if (iban.value == null) return;
   if (amount.value == null) return;
+
   try {
     await api.post('/api/transfers/bankTransfers/', {
       amount: amount.value * 100,
@@ -130,9 +121,39 @@ async function send() {
     $router.push('/overview');
   } catch {
     $q.notify({
-      message: 'Error',
+      message: 'Failed to Trasfer',
       color: 'negative',
     });
+  }
+
+  if (standingOrder.value) {
+    try {
+      await api.post('/api/standingOrders/', {
+        amount: amount.value * 100,
+        iban: iban.value.replace(' ', ''),
+        frequency: operator.value,
+      });
+
+      $q.notify({
+        message: 'Transfer scheduled successfuly',
+        color: 'positive',
+      });
+      $router.push('/transfers');
+    } catch (e: AxiosError) {
+      console.log(e);
+      if (e.response?.status === 400) {
+        $q.notify({
+          message: t('standingOrder.error'),
+          color: 'negative',
+        });
+      } else e;
+      {
+        $q.notify({
+          message: t('Failed to schedule'),
+          color: 'negative',
+        });
+      }
+    }
   }
 }
 
