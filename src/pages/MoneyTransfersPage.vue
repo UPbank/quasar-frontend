@@ -137,6 +137,6 @@ async function send() {
 }
 
 function validateIBAN(iban: string): boolean {
-  return /^PT\d{23}$/.test(iban);
+  return /^PT50\d{21}$/.test(iban);
 }
 </script>
