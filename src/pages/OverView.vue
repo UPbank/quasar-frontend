@@ -37,7 +37,7 @@
       </q-card-section>
       <q-card-section class="row">
         <div class="q-pa-md" style="max-width: 300px">
-          <q-input filled v-model="date" mask="date" :rules="['date']">
+          <q-input filled v-model="startDate" mask="date" :rules="['date']">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy
@@ -45,7 +45,7 @@
                   transition-show="scale"
                   transition-hide="scale"
                 >
-                  <q-date v-model="date">
+                  <q-date v-model="startDate">
                     <div class="row items-center justify-end">
                       <q-btn
                         v-close-popup
@@ -61,7 +61,7 @@
           </q-input>
         </div>
         <div class="q-pa-md" style="max-width: 300px">
-          <q-input filled v-model="date" mask="date" :rules="['date']">
+          <q-input filled v-model="startDate" mask="date" :rules="['date']">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy
@@ -69,7 +69,7 @@
                   transition-show="scale"
                   transition-hide="scale"
                 >
-                  <q-date v-model="date">
+                  <q-date v-model="startDate">
                     <div class="row items-center justify-end">
                       <q-btn
                         v-close-popup
@@ -111,6 +111,7 @@
       </div>
     </template>
   </q-infinite-scroll>
+  <span v-if="!hasMorePages">No more transactions</span>
 </template>
 
 <script setup lang="ts">
@@ -145,51 +146,37 @@ const options = [
   },
   {
     label: 'Income',
-    value: 'income',
+    value: 'INCOME',
   },
   {
     label: 'Expense',
-    value: 'expense',
+    value: 'EXPENSE',
   },
 ];
 
-const date = ref('2019/02/01');
+const startDate = ref('2019/02/01');
+const endDate = ref('2019/02/01');
 
-// ?type=INCOME&page=
-
+function getSymbol(currString: string) {
+  return currString + (currString == '' ? '?' : '&');
+}
 const queryString = computed(() => {
-  //no filter
-  if (typeFilter.value == 'none' && filter.value == '')
-    return '?page=';
+  let result = '';
+  if (typeFilter.value != 'none') {
+    result = `${getSymbol(result)}type=${typeFilter.value}`;
+  }
+  if (filter.value != '') {
+    result = `${getSymbol(result)}fromTo=${filter.value}`;
+  }
 
-  //income only
-  if (typeFilter.value == 'income' && filter.value == '')
-    return '?type=income&page=';
-
-  //expense only
-  if (typeFilter.value == 'expense' && filter.value == '')
-    return '?type=expense&page=';
-
-  //by search word only
-  if (typeFilter.value == 'none' && filter.value == '')
-    return '?page=&filter.value=op:value';
-
-  //incomes, by search word
-  if (typeFilter.value == 'income' && filter.value == '')
-    return '?type=income?page=&filter.value=op:value';
-
-  //expenses, by search word
-  if (typeFilter.value == 'expense' && filter.value == '')
-    return '?type=expense?page=&filter.value=op:value';
-
-  //by dates
-  if (typeFilter.value == 'none' && filter.value == '')
-    return '?page=';
-
-    // api/transfers/filtered?startDate=01%2F01%2F2022&endDate=01%2F02%2F2022
-  return '';
-
-
+  if (startDate.value != '') {
+    result = `${getSymbol(result)}minDate=${startDate.value}`;
+  }
+  if (startDate.value != '') {
+    result = `${getSymbol(result)}maxDate=${endDate.value}`;
+  }
+  result = `${getSymbol(result)}page=`;
+  return result;
 });
 
 async function onLoad(page: number, callback: () => void) {
@@ -202,15 +189,16 @@ async function onLoad(page: number, callback: () => void) {
     if (response.data.page + 1 >= response.data.totalPages) {
       hasMorePages.value = false;
     }
-    console.log('test');
     callback();
   } catch (error) {
-    $q.notify({
-      message: 'You have no more transactions',
-      color: 'negative',
-    });
     hasMorePages.value = false;
     callback();
+    if ((error as AxiosError).response?.status === 401) {
+      $q.notify({
+        message: t('registration.access.denied'),
+        color: 'negative',
+      });
+    }
   }
 }
 </script>
