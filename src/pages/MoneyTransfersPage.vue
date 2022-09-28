@@ -36,7 +36,9 @@
         label="Frequency"
         filled
         v-model="operator"
-        :options="options"
+        :options="frequencyOptions"
+        emit-value
+        map-options
       />
     </div>
 
@@ -52,12 +54,43 @@
   </q-card>
 </template>
 
+<script>
+export default {
+  setup() {
+    return {
+      model: ref(null),
+
+      frequencyOptions: [
+        {
+          label: 'Daily',
+          value: 'DAILY',
+        },
+        {
+          label: 'Weekly',
+          value: 'WEEKLY',
+        },
+        {
+          label: 'Monthly',
+          value: 'MONTHLY',
+        },
+        {
+          label: 'Yearly',
+          value: 'YEARLY',
+          disable: true,
+        },
+      ],
+    };
+  },
+};
+</script>
+
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { AxiosError } from 'axios';
 
 const { t } = useI18n();
 const $q = useQuasar();
@@ -66,7 +99,7 @@ const $router = useRouter();
 const iban = ref(null as null | string);
 const amount = ref(null as null | number);
 const note = ref(null as null | string);
-const options = [null, 'Every Week', 'Every Month', 'Every Year'];
+//const frequencyOptions = [null, 'Every Week', 'Every Month', 'Every Year'];
 const operator = ref(null as null | number);
 const standingOrder = ref(false);
 
@@ -85,20 +118,42 @@ async function send() {
       message: 'Transfer sent successfuly',
       color: 'positive',
     });
-    if (standingOrder.value) {
-      // parte da ana
-      // try catch novo com os erros da criação da standing order
-      //vasempre fazer a trasnferencia, mas só se for standing order é que entra aqui e é que vai agendar
-      //TODO
-      //fazer issue para a paginação da standing order
-      //fazer issue para o PUT do standing order
-    }
     $router.push('/overview');
   } catch {
     $q.notify({
-      message: 'Error',
+      message: 'Failed to Trasfer',
       color: 'negative',
     });
+  }
+
+  if (standingOrder.value) {
+    try {
+      await api.post('/api/standingOrders/', {
+        amount: amount.value * 100,
+        iban: iban.value.replace(' ', ''),
+        frequency: operator.value,
+      });
+
+      $q.notify({
+        message: 'Transfer scheduled successfuly',
+        color: 'positive',
+      });
+      $router.push('/transfers');
+    } catch (e: AxiosError) {
+      console.log(e);
+      if (e.response?.status === 400) {
+        $q.notify({
+          message: t('standingOrder.error'),
+          color: 'negative',
+        });
+      } else e;
+      {
+        $q.notify({
+          message: t('Failed to schedule'),
+          color: 'negative',
+        });
+      }
+    }
   }
 }
 

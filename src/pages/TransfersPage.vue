@@ -30,7 +30,11 @@
               <q-card style="min-height: 400px">
                 <q-card-section style="width: 200px">
                   <div>{{ $t('Frequency') }}</div>
-                  <q-select filled v-model="operator" :options="options" />
+                  <q-select
+                    filled
+                    v-model="operator"
+                    :options="frequencyOptions"
+                  />
                   <div>
                     <div>{{ $t('Note') }}</div>
                     <q-input filled v-model="text"></q-input>
@@ -70,7 +74,6 @@
                       rounded
                       color="primary"
                       :label="t('Continue')"
-                      @click="scheduling()"
                     />
 
                     <q-btn
@@ -92,6 +95,8 @@
 </template>
 
 <script setup lang="ts">
+import { AxiosError } from 'axios';
+import { text } from 'body-parser';
 import { date, useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { ref } from 'vue';
@@ -144,83 +149,30 @@ api
   .then((response) => {
     rows.value = response.data.content;
   })
-  .catch((error) => {
-    $q.notify({ message: t('standingOrders.error'), color: 'negative' });
+  .catch((e) => {
+    $q.notify({
+      message: t('standingOrders.error'),
+      color: 'negative',
+    });
     rows.value = [];
   });
 
-// api
-//   //.post('/api/moneyTransfers/')
-//   async function scheduling() {
-//
-//   try {
-//     await api.post('/api/moneyTransfers/', {
-//       amount: amount.value * 100,
-//       frequency: frequency.value,
-//     //note: note.value, OPTIONAL
-//       date:date.value;
-//       receiverIban: receiverIban.value.replace(' ', ''),
-//     });
-//     // api.interceptors.request.use((config) => {
-//     //   config.headers.Authorization = `Bearer ${result.data['accessToken']}`;
-//     //   return config;
-//     // });
-//     // .then((request) => {
-//     // rows.value = request.data.content;
-
-//     $q.notify({
-//       message: 'Standing order successful',
-//       color: 'positive',
-//     });
-
-//     //$router.push('/standingOrder');
-//   } catch {
-//     $q.notify({
-//       message: 'standingOrders.error',
-//       color: 'negative',
-//       rows.value = [];
-//     });
-//   }
-
-//   try {
-//     async function schedulingAlteration() {
-//     if (iban.value == null) return;
-//     if (amount.value == null) return;
-//     .put('/api/standingOrders/{id}',
-//       amount: amount.value * 100,
-//       note: note.value,
-//       date: date.value,
-//       iban: iban.value.replace(' ', ''),
-//     });
-
-//     .then((request) => {
-//       rows.value = request.data.content;
-//     })
-
-//     $q.notify({
-//     message: t('Alteration successful'),
-//     color: 'positive' });
-//     rows.value = [];
-
-//     .catch((error) => {
-//       $q.notify({ message: t('standingOrders.error'),
-//       color: 'negative' });
-//       rows.value = [];
-//     });
-
 async function deleteScheduled(id: number) {
-  api
-    .delete(`/api/standingOrders/${id}`)
-    .then((request) => {
+  try {
+    api.delete(`/api/standingOrders/${id}`).then((request) => {
       rows.value = rows.value?.filter((x) => x.id != id);
+
       $q.notify({
         message: t('Deleted successfully'),
         color: 'positive',
       });
-    })
-    .catch((error) => {
-      $q.notify({ message: t('standingOrder.error'), color: 'negative' });
-      rows.value = [];
     });
+  } catch (e) {
+    console.log(e);
+    $q.notify({
+      message: t('Failed to delete'),
+      color: 'negative',
+    });
+  }
 }
 </script>
