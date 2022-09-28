@@ -114,6 +114,7 @@
 </template>
 
 <script setup lang="ts">
+import { AxiosError } from 'axios';
 import { computed, ref } from 'vue';
 import TransferItem from 'src/components/TransferItem.vue';
 import { api } from 'src/boot/axios';
@@ -154,12 +155,41 @@ const options = [
 
 const date = ref('2019/02/01');
 
-// TODO Filter
+// ?type=INCOME&page=
 
 const queryString = computed(() => {
-  if (typeFilter.value == 'none' && filter.value == '') return '?page=';
+  //no filter
+  if (typeFilter.value == 'none' && filter.value == '')
+    return '?page=';
 
+  //income only
+  if (typeFilter.value == 'income' && filter.value == '')
+    return '?type=income&page=';
+
+  //expense only
+  if (typeFilter.value == 'expense' && filter.value == '')
+    return '?type=expense&page=';
+
+  //by search word only
+  if (typeFilter.value == 'none' && filter.value == '')
+    return '?page=&filter.value=op:value';
+
+  //incomes, by search word
+  if (typeFilter.value == 'income' && filter.value == '')
+    return '?type=income?page=&filter.value=op:value';
+
+  //expenses, by search word
+  if (typeFilter.value == 'expense' && filter.value == '')
+    return '?type=expense?page=&filter.value=op:value';
+
+  //by dates
+  if (typeFilter.value == 'none' && filter.value == '')
+    return '?page=';
+
+    // api/transfers/filtered?startDate=01%2F01%2F2022&endDate=01%2F02%2F2022
   return '';
+
+
 });
 
 async function onLoad(page: number, callback: () => void) {
