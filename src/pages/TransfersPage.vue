@@ -2,11 +2,12 @@
   <div>
     <q-table
       :title="t('Scheduled Payments')"
-      :rows="rows"
+      :rows="rows || []"
       :columns="columns"
       row-key="name"
       :pagination="initialPagination"
       hide-pagination
+      :loading="rows == null"
     >
       <template v-slot:body="props">
         <q-tr :props="props">
@@ -89,9 +90,13 @@
 </template>
 
 <script setup lang="ts">
+import { useQuasar } from 'quasar';
+import { api } from 'src/boot/axios';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
+
+const $q = useQuasar();
 
 const options = [null, 'Every Week', 'Every Month', 'Every Year'];
 const operator = ref(null as null | number);
@@ -109,7 +114,7 @@ const columns = [
   {
     name: 'name',
     required: true,
-    label: () => t('Service'),
+    label: () => t('service'),
     align: 'left',
     field: 'name',
     sortable: true,
@@ -136,61 +141,15 @@ const columns = [
   },
 ];
 
-const rows = ref([
-  {
-    name: 'John Doe',
-    inicialdate: '2021/01/01',
-    frequency: 'Monthly',
-    amount: 1000,
-    active: true,
-  },
-  {
-    name: 'Jane Doe',
-    inicialdate: '2020/12/30',
-    frequency: 'Weekly',
-    amount: 500,
-  },
-  {
-    name: 'UALG Propinas',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'TMN',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'OPTIMUS',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'Freedy Kruger',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'Freedy Kruger2',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'Freedy Kruger3',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'Freedy Kruger4',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-]);
+api
+  .get('/api/standingOrders/')
+  .then((response) => {
+    rows.value = response.data.content;
+  })
+  .catch((error) => {
+    $q.notify({ message: t('standingOrders.error'), color: 'negative' });
+    rows.value = [];
+  });
+
+const rows = ref(null as null | []);
 </script>
