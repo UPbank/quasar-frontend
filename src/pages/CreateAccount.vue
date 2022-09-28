@@ -4,7 +4,7 @@
     <span class="text-center" style="max-width: 250px">
       {{ t('createaccount.header') }}
     </span>
-    <q-card>
+    <q-card style="min-width: 300px" class="q-mb-sm">
       <q-card-section>
         <q-input
           label="Email *"
@@ -116,6 +116,7 @@
             :label="t('Postal Code')"
             v-model="zipCode"
             mask="####-###"
+            :rules="[(val) => validateZipCode(val) || 'invalid.zipCode']"
           />
         </div>
         <div class="q-pa-xs"></div>
@@ -140,9 +141,13 @@
           lazy-rules
         />
 
-        <q-card-section class="q-gutter-x-md q-mt-xs">
-          <q-btn :label="t('login.createaccount')" color="primary" />
-          <q-btn :label="t('login.login')" outline color="primary" to="/" />
+        <q-card-section class="q-mt-xs full-width">
+          <q-btn
+            :label="t('login.createaccount')"
+            color="primary"
+            @click="createAccount"
+            class="full-width"
+          />
         </q-card-section>
       </q-card-section>
     </q-card>
@@ -194,7 +199,7 @@ function isOver18(birthday: string) {
 
 async function createAccount() {
   try {
-    const result = await api.post('/register', {
+    await api.post('/register', {
       email: email.value,
       password: password.value,
       fullName: fullName.value,
@@ -209,29 +214,28 @@ async function createAccount() {
         district: district.value,
       },
     });
-    api.interceptors.request.use((config) => {
-      config.headers.Authorization = `Bearer ${result.data['accessToken']}`;
-      return config;
-    });
     $router.push('/');
-
     $q.notify({
       message: t('account.created'),
       color: 'positive',
     });
-  } catch (e) {
+  } catch (e: AxiosError) {
     console.log(e);
-    if ((e as AxiosError).response?.status === 401) {
+    if (e.response?.status === 400) {
+      let message = '';
+      for (const error of e.response.data.fieldErrors) {
+        message += t(`${error.field}.${error.errorCode}`) + '\n';
+      }
       $q.notify({
-        message: t('email.invalid'),
+        message,
         color: 'negative',
       });
-    } else if ((e as AxiosError).response?.status === 402) {
+    } else if (e.response?.status === 409) {
       $q.notify({
         message: t('register.taken'),
         color: 'negative',
       });
-    } else if ((e as AxiosError).response?.status === 403) {
+    } else if (e.response?.status === 403) {
       $q.notify({
         message: t('zip-code.invalid'),
         color: 'negative',
@@ -243,5 +247,12 @@ async function createAccount() {
       });
     }
   }
+}
+async function validateEmail(email: string): Promise<boolean> {
+  return /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(email);
+}
+
+async function validateZipCode(zipCode: string): Promise<boolean> {
+  return /^\d{4}(-\d{3})?$/.test(zipCode);
 }
 </script>
