@@ -73,7 +73,7 @@ const columns = computed(() => [
 const rows = ref(null as null | []);
 
 api
-  .get('/api/directDebits/all')
+  .get('/api/directDebits/')
   .then((response) => {
     rows.value = response.data.content;
   })
