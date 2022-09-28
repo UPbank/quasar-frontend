@@ -152,7 +152,7 @@ api
 // api
 //   //.post('/api/moneyTransfers/')
 //   async function scheduling() {
-//   
+//
 //   try {
 //     await api.post('/api/moneyTransfers/', {
 //       amount: amount.value * 100,
