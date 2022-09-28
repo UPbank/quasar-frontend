@@ -19,7 +19,7 @@
           outlined
           v-model.number="reference"
           dense
-          mask="### ### ###"
+          mask="#########"
           style="max-width: 110px"
         />
         <div>{{ $t('Amount') }}</div>
@@ -78,7 +78,7 @@ function send() {
     .catch((error) => {
       if (error.response) {
         return $q.notify({
-          message: error.response.data.exception,
+          message: error.response.data.message,
           color: 'negative',
         });
       }

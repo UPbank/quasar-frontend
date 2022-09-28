@@ -10,7 +10,7 @@
             outlined
             v-model.number="entity"
             dense
-            mask="### ### ### ### ###"
+            mask="###############"
             style="max-width: 250px"
           />
         </div>
@@ -54,7 +54,7 @@ function send() {
   if (amount.value == null) return;
 
   api
-    .post('/api/transfers/govermentPayments/', {
+    .post('/api/transfers/governmentPayments/', {
       entity: entity.value,
       amount: amount.value,
     })
@@ -67,7 +67,7 @@ function send() {
     .catch((error) => {
       if (error.response) {
         return $q.notify({
-          message: error.response.data.exception,
+          message: error.response.data.message,
           color: 'negative',
         });
       }

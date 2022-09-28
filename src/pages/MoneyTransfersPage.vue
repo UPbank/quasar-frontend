@@ -113,27 +113,31 @@ const options = [null, 'Every Week', 'Every Month', 'Every Year'];
 const operator = ref(null as null | number);
 const date = ref('2019/02/01');
 
-async function send() {
+function send() {
   if (iban.value == null) return;
   if (amount.value == null) return;
-  try {
-    await api.post('/api/transfers/bankTransfers/', {
+  api
+    .post('/api/transfers/bankTransfers/', {
       amount: amount.value * 100,
       note: note.value,
       iban: iban.value.replace(' ', ''),
+    })
+    .then(() => {
+      $q.notify({
+        message: 'Transfer sent successfuly',
+        color: 'positive',
+      });
+      $router.push('/overview');
+    })
+    .catch((error) => {
+      if (error.response && error.response.data.message) {
+        return $q.notify({
+          message: error.response.data.message,
+          color: 'negative',
+        });
+      }
+      $q.notify({ message: t('badRequest.error'), color: 'negative' });
     });
-
-    $q.notify({
-      message: 'Transfer sent successfuly',
-      color: 'positive',
-    });
-    $router.push('/overview');
-  } catch {
-    $q.notify({
-      message: 'Error',
-      color: 'negative',
-    });
-  }
 }
 
 function validateIBAN(iban: string): boolean {
