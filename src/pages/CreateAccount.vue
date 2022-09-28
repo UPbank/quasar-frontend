@@ -82,6 +82,7 @@
             (v) => v.length >= 9 || t('createaccount.nineNumbers'),
             (v) => v.length <= 255 || t('createaccount.maxChars'),
           ]"
+
           lazy-rules
         />
         <q-input
@@ -94,6 +95,7 @@
           ]"
           lazy-rules
         />
+
 
         <span class="text-center" style="max-width: 250px">
           {{ t('createaccount.address') }}
@@ -177,6 +179,7 @@ const district = ref(null as null | string);
 const isPwd = ref(true);
 const $q = useQuasar();
 const $router = useRouter();
+
 // function login() {
 //   alert('teste');Postalcode
 // }

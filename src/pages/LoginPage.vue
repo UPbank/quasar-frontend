@@ -6,7 +6,12 @@
     }}</span>
     <q-card>
       <q-card-section>
-        <q-input :label="t('login.email')" v-model="email" type="email" />
+        <q-input
+          :label="t('login.email')"
+          v-model="email"
+          type="email"
+          :rules="[(val) => validateEmail(val) || 'Must be a valid email.']"
+        />
         <q-input
           :label="t('login.password')"
           v-model="password"
@@ -29,6 +34,7 @@
         <q-btn :label="t('login.login')" color="primary" @click="login" />
         <q-btn
           :label="t('login.createaccount')"
+          outline
           color="primary"
           to="/createaccount"
         />
@@ -51,6 +57,10 @@ const password = ref('');
 const isPwd = ref(true);
 const $q = useQuasar();
 const $router = useRouter();
+
+function validateEmail(email: string): boolean {
+  return /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(email);
+}
 
 async function login() {
   //success

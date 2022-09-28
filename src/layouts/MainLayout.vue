@@ -95,8 +95,12 @@ const pagesLeft: SidebarPage[] = [
   },
   {
     label: () => 'Card Manager',
-    to: '/d',
+    to: '/cardmanager',
   },
+  {
+    label: () => 'Standing Orders',
+    to: '/transfers'
+  }
 ];
 
 const pagesRight: SidebarPage[] = [

@@ -77,7 +77,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/CardManager',
+    path: '/cardmanager',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/CardManagerPage.vue') },
