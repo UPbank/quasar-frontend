@@ -17,7 +17,7 @@
           v-model="password"
           :type="isPwd ? 'password' : 'text'"
           :rules="[
-            (v) => v.length >= 8 || 'Password must be 8 digits or longer',
+            (v) => v.length >= 4 || 'Password must be 8 digits or longer',
           ]"
           lazy-rules
         >

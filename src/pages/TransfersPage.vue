@@ -70,6 +70,7 @@
                       rounded
                       color="primary"
                       :label="t('Continue')"
+                      @click="send"
                     />
 
                     <q-btn
@@ -152,4 +153,32 @@ api
   });
 
 const rows = ref(null as null | []);
+
+function send() {
+  if (operator.value == null) return;
+  if (amount.value == null) return;
+
+  api
+    .post('/api/transfers/bankTransfers/', {
+      operator: operator.value,
+      amount: amount.value,
+      text: text.value,
+      date: date.value,
+    })
+    .then(() => {
+      $q.notify({
+        message: 'Transfer sent successfuly',
+        color: 'positive',
+      });
+    })
+    .catch((error) => {
+      if (error.response) {
+        return $q.notify({
+          message: error.response.data.exception,
+          color: 'negative',
+        });
+      }
+      $q.notify({ message: t('badRequest.error'), color: 'negative' });
+    });
+}
 </script>
