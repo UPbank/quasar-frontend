@@ -103,10 +103,9 @@ const note = ref(null as null | string);
 const operator = ref(null as null | number);
 const standingOrder = ref(false);
 
-async function send() {
+function send() {
   if (iban.value == null) return;
   if (amount.value == null) return;
-
   try {
     await api.post('/api/transfers/bankTransfers/', {
       amount: amount.value * 100,
@@ -114,19 +113,11 @@ async function send() {
       iban: iban.value.replace(' ', ''),
     });
 
-    $q.notify({
-      message: 'Transfer sent successfuly',
-      color: 'positive',
-    });
-    $router.push('/overview');
-  } catch {
-    $q.notify({
-      message: 'Failed to Trasfer',
-      color: 'negative',
-    });
-  }
-
-  if (standingOrder.value) {
+      $q.notify({
+        message: 'Transfer sent successfuly',
+        color: 'positive',
+      });
+      if (standingOrder.value) {
     try {
       await api.post('/api/standingOrders/', {
         amount: amount.value * 100,
@@ -146,7 +137,7 @@ async function send() {
           message: t('standingOrder.error'),
           color: 'negative',
         });
-      } else e;
+      } else
       {
         $q.notify({
           message: t('Failed to schedule'),
@@ -154,6 +145,19 @@ async function send() {
         });
       }
     }
+  }
+      $router.push('/overview');
+
+    $q.notify({
+      message: 'Transfer sent successfuly',
+      color: 'positive',
+    });
+    $router.push('/overview');
+  } catch {
+    $q.notify({
+      message: 'Failed to Trasfer',
+      color: 'negative',
+    });
   }
 }
 
