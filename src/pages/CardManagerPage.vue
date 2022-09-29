@@ -143,10 +143,10 @@ function changeNfc(card) {
 function changePin(card) {
   $q.dialog({
     title: 'Set Up a New Pin',
-    message: 'New Pin must have Minimum 4 Digits',
+    message: 'New Pin must have 4 Digits',
     prompt: {
       model: '',
-      isValid: (val) => val.length > 3,
+      isValid: (val) => val.length == 4,
       type: 'text',
     },
     cancel: true,

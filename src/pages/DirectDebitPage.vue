@@ -2,11 +2,12 @@
   <div>
     <q-table
       :title="t('Direct Debit')"
-      :rows="rows"
+      :rows="rows || []"
       :columns="columns"
       row-key="name"
       :pagination="initialPagination"
       hide-pagination
+      :loading="rows == null"
     >
       <template v-slot:body-cell-active="props">
         <q-td :props="props">
@@ -14,118 +15,86 @@
             v-model="props.row.active"
             checked-icon="check"
             unchecked-icon="clear"
+            @update:model-value="toggleDirectDebit(props.row)"
           />
         </q-td>
       </template>
     </q-table>
-    <div class="q-gutter-x-md q-mt-md full-width row justify-center">
-      <q-btn unelevated rounded color="primary" :label="t('Continue')" />
-      <q-btn unelevated rounded color="primary" :label="t('Return')" />
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { AxiosError } from 'axios';
+import { useQuasar } from 'quasar';
+import { api } from 'src/boot/axios';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
 const { t } = useI18n();
+const $q = useQuasar();
+const $router = useRouter();
 
 const initialPagination = {
   rowsPerPage: 0,
 };
-const columns = [
+const columns = computed(() => [
+  {
+    name: 'id',
+    required: true,
+    label: t('directDebit.reference'),
+    align: 'left',
+    field: 'id',
+    sortable: true,
+  },
   {
     name: 'active',
-    label: () => t('Active/Inactive'),
+    label: t('directDebit.status'),
     align: 'left',
     field: 'active',
   },
   {
     name: 'name',
     required: true,
-    label: () => t('Service'),
+    label: t('directDebit.name'),
     align: 'left',
-    field: 'name',
+    field: (row) => row.receiver.fullName,
     sortable: true,
   },
   {
-    name: 'Date of Criation',
+    name: 'dateCreated',
     align: 'center',
-    label: () => t('Date of Criation'),
-    field: 'inicialdate',
+    label: t('directDebit.dateCreated'),
+    field: (row) => new Date(row.dateCreated).toLocaleDateString(),
     sortable: true,
-  },
-  {
-    name: 'Frequency',
-    label: () => t('Frequency'),
-    field: 'frequency',
-    sortable: true,
-  },
-  {
-    name: 'Amount',
-    label: () => t('Amount'),
-    field: 'amount',
-    format: (val: number) => `${(val / 100).toFixed(2)} €`,
-    sortable: true,
-  },
-];
-
-const rows = ref([
-  {
-    name: 'John Doe',
-    inicialdate: '2021/01/01',
-    frequency: 'Monthly',
-    amount: 1000,
-    active: true,
-  },
-  {
-    name: 'Jane Doe',
-    inicialdate: '2020/12/30',
-    frequency: 'Weekly',
-    amount: 500,
-  },
-  {
-    name: 'UALG Propinas',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'TMN',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'OPTIMUS',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'Freedy Kruger',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'Freedy Kruger2',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'Freedy Kruger3',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
-  },
-  {
-    name: 'Freedy Kruger4',
-    inicialdate: '2015/06/15',
-    frequency: 'Weekly',
-    amount: '5€',
   },
 ]);
+
+const rows = ref(null as null | []);
+
+api
+  .get('/api/directDebits/')
+  .then((response) => {
+    rows.value = response.data.content;
+  })
+  .catch((error) => {
+    $q.notify({ message: t('directDebit.error'), color: 'negative' });
+    rows.value = [];
+  });
+
+async function toggleDirectDebit(debit: Record<string, unknown>) {
+  try {
+    await api.put(`/api/directDebits/${debit.id}`, { active: debit.active });
+    $q.notify({
+      message: t(`directDebit.${debit.active ? 'activated' : 'deactivated'}`),
+      color: 'positive',
+    });
+  } catch (e) {
+    console.log(e);
+    $q.notify({
+      message: t('error.general'),
+      color: 'negative',
+    });
+  }
+}
 </script>

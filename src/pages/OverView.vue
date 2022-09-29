@@ -37,7 +37,7 @@
       </q-card-section>
       <q-card-section class="row">
         <div class="q-pa-md" style="max-width: 300px">
-          <q-input filled v-model="date" mask="date" :rules="['date']">
+          <q-input filled v-model="startDate" mask="date" :rules="['date']">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy
@@ -45,7 +45,7 @@
                   transition-show="scale"
                   transition-hide="scale"
                 >
-                  <q-date v-model="date">
+                  <q-date v-model="startDate">
                     <div class="row items-center justify-end">
                       <q-btn
                         v-close-popup
@@ -61,7 +61,7 @@
           </q-input>
         </div>
         <div class="q-pa-md" style="max-width: 300px">
-          <q-input filled v-model="date" mask="date" :rules="['date']">
+          <q-input filled v-model="startDate" mask="date" :rules="['date']">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy
@@ -69,7 +69,7 @@
                   transition-show="scale"
                   transition-hide="scale"
                 >
-                  <q-date v-model="date">
+                  <q-date v-model="startDate">
                     <div class="row items-center justify-end">
                       <q-btn
                         v-close-popup
@@ -87,31 +87,44 @@
       </q-card-section>
     </q-card>
   </div>
-  <span class="text-caption full-width" style="max-width: 401px"> 30 ago</span>
-  <transfer-item
-    v-for="transaction in filteredTransactions"
-    :name="transaction.name"
-    :key="transaction.id"
-    :amount="`${transaction.amount > 0 ? '+' : ''}${(
-      transaction.amount / 100
-    ).toFixed(2)} €`"
-    :time="transaction.time"
-  />
+  <!-- <span class="text-caption full-width" style="max-width: 401px"> 30 ago</span> -->
 
+  <q-infinite-scroll
+    @load="onLoad"
+    :offset="250"
+    :disable="!hasMorePages"
+    :initial-index="-1"
+    :key="queryString"
+  >
+    <transfer-item
+      v-for="transaction in transactions"
+      :name="transaction.sender"
+      :key="transaction.id"
+      :amount="`${transaction.amount > 0 ? '+' : ''}${(
+        transaction.amount / 100
+      ).toFixed(2)} €`"
+      :time="transaction.time"
+    />
+    <template v-slot:loading>
+      <div class="row justify-center q-my-md">
+        <q-spinner-dots color="primary" size="40px" />
+      </div>
+    </template>
+  </q-infinite-scroll>
+  <span v-if="!hasMorePages">No more transactions</span>
 </template>
 
 <script setup lang="ts">
+import { AxiosError } from 'axios';
 import { computed, ref } from 'vue';
 import TransferItem from 'src/components/TransferItem.vue';
 import { api } from 'src/boot/axios';
 import { useI18n } from 'vue-i18n';
+import { useQuasar } from 'quasar';
 
+const $q = useQuasar();
 const { t } = useI18n();
-const transactions = [
-
-  { id: 1, name: 'Pingo Doce', amount: -1000, time: '12:34' },
-  { id: 2, name: 'Deloitte', amount: +300000, time: '10:53' },
-];
+const transactions = ref([]);
 
 const account = ref(null);
 
@@ -119,6 +132,8 @@ api.get('/api/accounts/').then((response) => {
   console.log(response);
   account.value = response.data;
 });
+
+const hasMorePages = ref(true);
 
 const typeFilter = ref('none');
 
@@ -131,45 +146,59 @@ const options = [
   },
   {
     label: 'Income',
-    value: 'income',
+    value: 'INCOME',
   },
   {
     label: 'Expense',
-    value: 'expense',
+    value: 'EXPENSE',
   },
 ];
 
-const filteredTransactions = computed(() => {
-  let result;
-  if (typeFilter.value == 'income') {
-    result = getIncome();
-  } else if (typeFilter.value == 'expense') {
-    result = getExpense();
-  } else {
-    result = transactions;
-  }
+const startDate = ref('2019/02/01');
+const endDate = ref('2019/02/01');
 
+function getSymbol(currString: string) {
+  return currString + (currString == '' ? '?' : '&');
+}
+const queryString = computed(() => {
+  let result = '';
+  if (typeFilter.value != 'none') {
+    result = `${getSymbol(result)}type=${typeFilter.value}`;
+  }
   if (filter.value != '') {
-    const lowercaseFilter = filter.value.toLowerCase();
-    result = result.filter((x) =>
-      x.name.toLowerCase().includes(lowercaseFilter)
-    );
+    result = `${getSymbol(result)}fromTo=${filter.value}`;
   }
 
+  if (startDate.value != '') {
+    result = `${getSymbol(result)}minDate=${startDate.value}`;
+  }
+  if (startDate.value != '') {
+    result = `${getSymbol(result)}maxDate=${endDate.value}`;
+  }
+  result = `${getSymbol(result)}page=`;
   return result;
 });
 
-function getIncome() {
-  return transactions.filter((x) => x.amount > 0);
-}
-
-function getExpense() {
-  return transactions.filter((x) => x.amount < 0);
-}
-
-const date = ref('2019/02/01');
-
-function onItemClick() {
-  // console.log('Clicked on an Item')
+async function onLoad(page: number, callback: () => void) {
+  try {
+    const response = await api.get(`api/transfers/${queryString.value}${page}`);
+    transactions.value = [
+      ...(transactions.value || []),
+      ...response.data.content,
+    ];
+    if (response.data.page + 1 >= response.data.totalPages) {
+      hasMorePages.value = false;
+    }
+    callback();
+  } catch (error) {
+    hasMorePages.value = false;
+    callback();
+    if ((error as AxiosError).response?.status === 401) {
+      $q.notify({
+        message: t('registration.access.denied'),
+        color: 'negative',
+      });
+    }
+  }
 }
 </script>

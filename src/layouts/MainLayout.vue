@@ -71,6 +71,10 @@ const pagesLeft: SidebarPage[] = [
         to: '/moneytransfers',
       },
       {
+        label: () => 'Scheduled Payments',
+        to: '/transfers',
+      },
+      {
         label: () => 'Payments',
         children: [
           {
@@ -125,7 +129,7 @@ const pagesRight: SidebarPage[] = [
   },
   {
     label: () => 'Log Out',
-    to: '/f',
+    to: '/',
   },
 ];
 

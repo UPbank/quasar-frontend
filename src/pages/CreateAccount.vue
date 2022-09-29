@@ -4,7 +4,7 @@
     <span class="text-center" style="max-width: 250px">
       {{ t('createaccount.header') }}
     </span>
-    <q-card>
+    <q-card style="min-width: 300px" class="q-mb-sm">
       <q-card-section>
         <q-input
           label="Email *"
@@ -82,6 +82,7 @@
             (v) => v.length >= 9 || t('createaccount.nineNumbers'),
             (v) => v.length <= 255 || t('createaccount.maxChars'),
           ]"
+
           lazy-rules
         />
         <q-input
@@ -94,6 +95,7 @@
           ]"
           lazy-rules
         />
+
 
         <span class="text-center" style="max-width: 250px">
           {{ t('createaccount.address') }}
@@ -116,6 +118,7 @@
             :label="t('Postal Code')"
             v-model="zipCode"
             mask="####-###"
+            :rules="[(val) => validateZipCode(val) || 'invalid.zipCode']"
           />
         </div>
         <div class="q-pa-xs"></div>
@@ -140,9 +143,13 @@
           lazy-rules
         />
 
-        <q-card-section class="q-gutter-x-md q-mt-xs">
-          <q-btn :label="t('login.createaccount')" color="primary" />
-          <q-btn :label="t('login.login')" outline color="primary" to="/" />
+        <q-card-section class="q-mt-xs full-width">
+          <q-btn
+            :label="t('login.createaccount')"
+            color="primary"
+            @click="createAccount"
+            class="full-width"
+          />
         </q-card-section>
       </q-card-section>
     </q-card>
@@ -150,13 +157,16 @@
 </template>
 
 <script setup lang="ts">
+import { AxiosError } from 'axios';
+import { useQuasar } from 'quasar';
+import { api } from 'src/boot/axios';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
 const { t } = useI18n();
 const email = ref(null as null | string);
 const password = ref(null as null | string);
-const isPwd = ref(true);
 const fullName = ref(null as null | string);
 const birthdate = ref('2000-01-01');
 const taxNumber = ref(null as null | string);
@@ -166,12 +176,13 @@ const line2 = ref(null as null | string);
 const zipCode = ref(null as null | string);
 const city = ref(null as null | string);
 const district = ref(null as null | string);
+const isPwd = ref(true);
+const $q = useQuasar();
+const $router = useRouter();
+
 // function login() {
 //   alert('teste');Postalcode
 // }
-function onItemClick() {
-  alert('Conta criada');
-}
 
 function isOver18(birthday: string) {
   const now = new Date();
@@ -189,7 +200,62 @@ function isOver18(birthday: string) {
   return day <= validDay;
 }
 
-function validateEmail(email: string): boolean {
+async function createAccount() {
+  try {
+    await api.post('/register', {
+      email: email.value,
+      password: password.value,
+      fullName: fullName.value,
+      birthdate: birthdate.value,
+      taxNumber: taxNumber.value,
+      idNumber: idNumber.value,
+      address: {
+        line1: line1.value,
+        line2: line2.value,
+        zipCode: zipCode.value,
+        city: city.value,
+        district: district.value,
+      },
+    });
+    $router.push('/');
+    $q.notify({
+      message: t('account.created'),
+      color: 'positive',
+    });
+  } catch (e: AxiosError) {
+    console.log(e);
+    if (e.response?.status === 400) {
+      let message = '';
+      for (const error of e.response.data.fieldErrors) {
+        message += t(`${error.field}.${error.errorCode}`) + '\n';
+      }
+      $q.notify({
+        message,
+        color: 'negative',
+      });
+    } else if (e.response?.status === 409) {
+      $q.notify({
+        message: t('register.taken'),
+        color: 'negative',
+      });
+    } else if (e.response?.status === 403) {
+      $q.notify({
+        message: t('zip-code.invalid'),
+        color: 'negative',
+      });
+    } else {
+      $q.notify({
+        message: t('error.general'),
+        color: 'negative',
+      });
+    }
+  }
+}
+async function validateEmail(email: string): Promise<boolean> {
   return /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(email);
+}
+
+async function validateZipCode(zipCode: string): Promise<boolean> {
+  return /^\d{4}(-\d{3})?$/.test(zipCode);
 }
 </script>
