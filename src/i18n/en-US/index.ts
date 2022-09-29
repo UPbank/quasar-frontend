@@ -22,5 +22,6 @@ export default {
     header: 'Danger zone',
     subheader: 'Careful, this action is not reversible!',
     deleteaccount: 'Delete Account',
+    transfer_and_deleteaccount: 'Transfer and Delete Account',
   },
 };
