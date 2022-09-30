@@ -1,44 +1,41 @@
 <template>
-  <q-page class="column items-center justify-center q-gutter-y-md">
-    <q-img src="icons/logo.png" style="max-width: 100px" />
-    <span class="text-center" style="max-width: 250px">{{
-      t('login.header')
-    }}</span>
+  <q-page class="column items-center justify-center q-gutter-y-xl">
+    <q-img src="logo-square.svg" style="max-width: 200px" />
     <q-card>
-      <q-card-section>
-        <q-input
-          :label="t('login.email')"
-          v-model="email"
-          type="email"
-          :rules="[(val) => validateEmail(val) || 'Must be a valid email.']"
-        />
-        <q-input
-          :label="t('login.password')"
-          v-model="password"
-          :type="isPwd ? 'password' : 'text'"
-          :rules="[
-            (v) => v.length >= 4 || 'Password must be 8 digits or longer',
-          ]"
-          lazy-rules
-        >
-          <template v-slot:append>
-            <q-icon
-              :name="isPwd ? 'visibility_off' : 'visibility'"
-              class="cursor-pointer"
-              @click="isPwd = !isPwd"
-            />
-          </template>
-        </q-input>
-      </q-card-section>
-      <q-card-section class="q-gutter-x-md q-mt-lg">
-        <q-btn :label="t('login.login')" color="primary" @click="login" />
-        <q-btn
-          :label="t('login.createaccount')"
-          outline
-          color="primary"
-          to="/createaccount"
-        />
-      </q-card-section>
+      <q-form @submit="login()">
+        <q-card-section>
+          <q-input
+            :label="t('login.email')"
+            v-model="email"
+            type="email"
+            :rules="[(val) => validateEmail(val) || 'Must be a valid email.']"
+          />
+          <q-input
+            :label="t('login.password')"
+            v-model="password"
+            :type="isPwd ? 'password' : 'text'"
+            lazy-rules
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
+        </q-card-section>
+        <q-card-section class="column justify-center">
+          <q-btn :label="t('login.login')" color="secondary" type="submit" />
+          <q-btn
+            :label="t('login.createaccount')"
+            class="q-mt-md"
+            flat
+            color="primary"
+            to="/createaccount"
+          />
+        </q-card-section>
+      </q-form>
     </q-card>
   </q-page>
 </template>
@@ -52,8 +49,8 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 const { t } = useI18n();
-const email = ref('');
-const password = ref('');
+const email = ref('random@upbank.pt');
+const password = ref('string');
 const isPwd = ref(true);
 const $q = useQuasar();
 const $router = useRouter();
@@ -73,13 +70,13 @@ async function login() {
       config.headers.Authorization = `Bearer ${result.data['accessToken']}`;
       return config;
     });
-    $router.push('/overview');
+    $router.push('/home');
 
     $q.notify({
       message: t('login.succesful'),
       color: 'positive',
     });
-    $router.push('/overview');
+    $router.push('/home');
 
     //error
   } catch (e) {
