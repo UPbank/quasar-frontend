@@ -113,46 +113,45 @@ function send() {
       iban: iban.value.replace(' ', ''),
     });
 
-      $q.notify({
-        message: 'Transfer sent successfuly',
-        color: 'positive',
-      });
-      if (standingOrder.value) {
-    try {
-      await api.post('/api/standingOrders/', {
-        amount: amount.value * 100,
-        iban: iban.value.replace(' ', ''),
-        frequency: operator.value,
-      });
+    $q.notify({
+      message: 'Transfer sent successfuly',
+      color: 'positive',
+    });
+    if (standingOrder.value) {
+      try {
+        await api.post('/api/standingOrders/', {
+          amount: amount.value * 100,
+          iban: iban.value.replace(' ', ''),
+          frequency: operator.value,
+        });
 
-      $q.notify({
-        message: 'Transfer scheduled successfuly',
-        color: 'positive',
-      });
-      $router.push('/transfers');
-    } catch (e: AxiosError) {
-      console.log(e);
-      if (e.response?.status === 400) {
         $q.notify({
-          message: t('standingOrder.error'),
-          color: 'negative',
+          message: 'Transfer scheduled successfuly',
+          color: 'positive',
         });
-      } else
-      {
-        $q.notify({
-          message: t('Failed to schedule'),
-          color: 'negative',
-        });
+        $router.push('/transfers');
+      } catch (e: AxiosError) {
+        console.log(e);
+        if (e.response?.status === 400) {
+          $q.notify({
+            message: t('standingOrder.error'),
+            color: 'negative',
+          });
+        } else {
+          $q.notify({
+            message: t('Failed to schedule'),
+            color: 'negative',
+          });
+        }
       }
     }
-  }
-      $router.push('/overview');
+    $router.push('/home');
 
     $q.notify({
       message: 'Transfer sent successfuly',
       color: 'positive',
     });
-    $router.push('/overview');
+    $router.push('/home');
   } catch {
     $q.notify({
       message: 'Failed to Trasfer',
