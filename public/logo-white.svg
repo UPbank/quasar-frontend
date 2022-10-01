@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="118.98908mm"
+   height="118.98908mm"
+   version="1.1"
+   viewBox="0 0 118.98909 118.98908"
+   id="svg14"
+   sodipodi:docname="logo-white.svg"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   inkscape:export-filename="C:\Users\Pedro Cavalheiro\Desktop\git\upskill\project\quasar-frontend\public\logo-white.png"
+   inkscape:export-xdpi="250"
+   inkscape:export-ydpi="250"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs18" />
+  <sodipodi:namedview
+     id="namedview16"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.5321687"
+     inkscape:cx="-196.12723"
+     inkscape:cy="224.19202"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
+     inkscape:window-x="1916"
+     inkscape:window-y="1089"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg14"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <text
+     transform="matrix(0.26458,0,0,0.26458,-87.608684,-87.047727)"
+     fill="#000000"
+     font-family="'Frutiger LT Std 45 Light'"
+     font-size="18.667px"
+     font-weight="bold"
+     style="line-height:1.25;white-space:pre;shape-inside:url(#rect2715)"
+     xml:space="preserve"
+     id="text2" />
+  <g
+     transform="matrix(0.88555782,0,0,0.88555782,-78.868562,-92.945922)"
+     id="g6"
+     style="stroke:none;stroke-width:1.12923;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  <g
+     transform="matrix(0.88555782,0,0,0.88555782,-177.89741,-98.074419)"
+     id="g6-1"
+     style="stroke:none;stroke-width:1.12923;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  <path
+     style="color:#000000;mix-blend-mode:exclusion;fill:#ffffff;fill-opacity:1;stroke-width:1.5;-inkscape-stroke:none"
+     d="m 29.641023,22.375646 c 1.862239,0.100422 3.72448,0.199924 5.586631,0.300948 -3.934003,19.721373 -7.905465,39.436547 -11.818656,59.161457 -1.15645,6.46812 -1.324529,13.242638 0.857822,19.471649 0.971546,2.79411 2.47726,5.47886 4.301243,7.63732 4.062586,4.86596 9.977581,8.01633 16.08793,9.32758 5.086467,1.07453 10.338002,0.85583 15.410477,-0.11598 6.679674,-1.31337 12.953054,-4.36048 18.297394,-8.46903 6.59634,-5.00092 12.07104,-11.636231 15.08725,-19.391939 2.372681,-6.1587 3.611841,-12.99379 2.624001,-19.629278 -1.04452,-7.057896 -5.029881,-13.539294 -10.594821,-17.950257 -3.92691,-3.112736 -8.84123,-4.928838 -13.754481,-5.494886 -2.704671,-0.341117 -5.513572,-0.234974 -8.292452,-0.349309 -1.786701,-0.03179 -3.597933,-0.0402 -5.345493,0.103708 -1.821238,9.281532 -3.642565,18.563063 -5.463803,27.844592 2.800134,-1.25714 5.889048,-1.79272 8.942363,-1.904301 2.500815,-0.05738 5.066276,0.998291 6.551002,3.061371 1.84382,2.22435 2.137294,5.34753 1.446028,8.0716 -1.041505,4.38829 -4.627925,7.95842 -8.860006,9.36831 -2.642062,0.793606 -5.634539,0.854256 -8.165463,-0.34591 -2.227444,-1.07826 -3.464568,-3.48397 -3.748743,-5.8608 -0.596583,-4.36208 0.729389,-8.65314 1.494467,-12.90612 3.341829,-16.730846 6.683393,-33.46169 10.0254,-50.192534 1.906075,0.09886 3.812061,0.199622 5.718047,0.299221 C 60.754726,16.275313 55.481937,8.137391 50.210212,0 43.354046,7.458079 36.498234,14.916336 29.641359,22.374504 Z"
+     id="path5812" />
+</svg>
