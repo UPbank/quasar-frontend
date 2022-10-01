@@ -1,88 +1,124 @@
 <template>
-  <div class="q-pa-xl"></div>
-  <q-card class="text-caption" size="dense">
-    <q-card-section padding class="column items-center">
-      <div>Transfer Data</div>
-      <div class="q-pa-md">
-        <div>IBAN</div>
-        <q-input
-          outlined
-          v-model="iban"
-          :rules="[(val) => validateIBAN(val) || 'Must be a valid IBAN.']"
-          dense
-          style="max-width: 400px"
-          lazy-rules
+  <q-form @submit="slide == 'confirm' ? send() : (slide = 'confirm')">
+    <h3 class="q-mt-sm text-center">National Transfer</h3>
+    <q-card class="text-caption" size="dense">
+      <q-card-section>
+        <q-carousel
+          v-model="slide"
+          transition-prev="slide-right"
+          transition-next="slide-left"
+          animated
+        >
+          <q-carousel-slide
+            name="input"
+            class="column justify-center items-center"
+          >
+            <span class="q-mb-md">Balance: 10.00€</span>
+            <q-input
+              v-model.number="amount"
+              maxlength="9"
+              mask="#.##€"
+              fill-mask="0"
+              max-val="1000000"
+              reverse-fill-mask
+              unmasked-value
+              input-class="text-center text-h4"
+              borderless
+              :rules="[(v) => !!v]"
+              :size="(amount || 0).toFixed(2).length - 1"
+            />
+            <q-input
+              v-model="iban"
+              style="max-width: 260px"
+              label="IBAN"
+              prefix="PT50"
+              mask="#### #### #### ####### ##"
+              placeholder="0000 0000 0000 0000000 00"
+              class="full-width"
+              unmasked-value
+              lazy-rules
+              :rules="[(v) => v.length === 21]"
+            />
+            <q-input
+              v-model="note"
+              label="Note"
+              autogrow
+              class="full-width q-my-md"
+              maxlength="128"
+            />
+          </q-carousel-slide>
+          <q-carousel-slide
+            name="confirm"
+            class="column justify-center items-center"
+          >
+            <h6 class="q-my-md">Amount</h6>
+            <div class="text-subtitle1 q-mb-md">10.00€</div>
+
+            <q-separator />
+
+            <h6 class="q-my-md">Recepient</h6>
+            <div class="text-subtitle1 q-mb-md">
+              {{
+                `PT50
+            ${iban.substring(0, 4)}
+            ${iban.substring(4, 8)}
+            ${iban.substring(8, 12)}
+            ${iban.substring(12, 23)}
+            ${iban.substring(23)}`
+              }}
+            </div>
+
+            <q-separator />
+
+            <q-toggle
+              label="Make this a standing order"
+              v-model="standingOrder"
+              class="q-mt-md"
+            />
+            <q-select
+              v-if="standingOrder"
+              label="Frequency"
+              v-model="operator"
+              :options="frequencyOptions"
+              emit-value
+              map-options
+              style="min-width: 200px"
+              :rules="[(v) => !!v]"
+            />
+          </q-carousel-slide>
+        </q-carousel>
+      </q-card-section>
+
+      <q-card-actions align="between" class="q-pr-lg q-pb-lg">
+        <q-btn
+          flat
+          icon="arrow_back"
+          v-if="slide == 'confirm'"
+          @click="slide = 'input'"
         />
-        <div>Amount</div>
-        <q-input
-          outlined
-          v-model="amount"
-          dense
-          style="max-width: 400px"
-          suffix="€"
-          :rules="[(v) => v > 0 || 'Must be positive']"
-          lazy-rules
+        <div v-else />
+        <q-btn
+          :icon-right="
+            slide == 'confirm'
+              ? standingOrder
+                ? 'schedule_send'
+                : 'send'
+              : 'arrow_forward'
+          "
+          color="primary"
+          :label="
+            slide == 'confirm'
+              ? standingOrder
+                ? 'Send and schedule'
+                : 'Send'
+              : 'Confirmation'
+          "
+          type="submit"
         />
-
-        <div>Note</div>
-        <q-input outlined v-model="note" dense style="max-width: 400px" />
-      </div>
-    </q-card-section>
-
-    <div class="q-pa-md" style="max-width: 350px">
-      <q-toggle label="Make this a standing order" v-model="standingOrder" />
-      <q-select
-        v-if="standingOrder"
-        label="Frequency"
-        filled
-        v-model="operator"
-        :options="frequencyOptions"
-        emit-value
-        map-options
-      />
-    </div>
-
-    <q-card-section class="text-center">
-      <q-btn
-        unelevated
-        rounded
-        color="primary"
-        :label="t('Continue')"
-        @click="send()"
-      />
-    </q-card-section>
-  </q-card>
+      </q-card-actions>
+    </q-card>
+  </q-form>
 </template>
-
-<script>
-export default {
-  setup() {
-    return {
-      model: ref(null),
-
-      frequencyOptions: [
-        {
-          label: 'Daily',
-          value: 'DAILY',
-        },
-        {
-          label: 'Weekly',
-          value: 'WEEKLY',
-        },
-        {
-          label: 'Monthly',
-          value: 'MONTHLY',
-        },
-        {
-          label: 'Yearly',
-          value: 'YEARLY',
-          disable: true,
-        },
-      ],
-    };
-  },
-};
-</script>
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
@@ -96,21 +132,39 @@ const { t } = useI18n();
 const $q = useQuasar();
 const $router = useRouter();
 
-const iban = ref(null as null | string);
+const iban = ref('');
 const amount = ref(null as null | number);
 const note = ref(null as null | string);
-//const frequencyOptions = [null, 'Every Week', 'Every Month', 'Every Year'];
+const slide = ref('input');
+const frequencyOptions = [
+  {
+    label: 'Daily',
+    value: 'DAILY',
+  },
+  {
+    label: 'Weekly',
+    value: 'WEEKLY',
+  },
+  {
+    label: 'Monthly',
+    value: 'MONTHLY',
+  },
+  {
+    label: 'Yearly',
+    value: 'YEARLY',
+  },
+];
 const operator = ref(null as null | number);
 const standingOrder = ref(false);
 
-function send() {
+async function send() {
   if (iban.value == null) return;
   if (amount.value == null) return;
   try {
     await api.post('/api/transfers/bankTransfers/', {
-      amount: amount.value * 100,
+      amount: amount.value,
       note: note.value,
-      iban: iban.value.replace(' ', ''),
+      iban: 'PT50' + iban.value,
     });
 
     $q.notify({
@@ -120,8 +174,8 @@ function send() {
     if (standingOrder.value) {
       try {
         await api.post('/api/standingOrders/', {
-          amount: amount.value * 100,
-          iban: iban.value.replace(' ', ''),
+          amount: amount.value,
+          iban: 'PT50' + iban.value,
           frequency: operator.value,
         });
 
@@ -130,9 +184,10 @@ function send() {
           color: 'positive',
         });
         $router.push('/transfers');
-      } catch (e: AxiosError) {
+      } catch (e) {
         console.log(e);
-        if (e.response?.status === 400) {
+        const error = e as AxiosError;
+        if (error.response?.status === 400) {
           $q.notify({
             message: t('standingOrder.error'),
             color: 'negative',
@@ -158,9 +213,5 @@ function send() {
       color: 'negative',
     });
   }
-}
-
-function validateIBAN(iban: string): boolean {
-  return /^PT50\d{21}$/.test(iban);
 }
 </script>
