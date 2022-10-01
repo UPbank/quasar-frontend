@@ -1,23 +1,24 @@
 <template>
-  <q-page class="column items-center justify-center q-gutter-y-md">
-    <q-img src="icons/logo.png" style="max-width: 100px" />
-    <span class="text-center" style="max-width: 250px">
-      {{ t('createaccount.header') }}
-    </span>
+  <q-form class="column items-center justify-center" @submit="createAccount()">
     <q-card style="min-width: 300px" class="q-mb-sm">
+      <div class="row justify-between items-center q-mt-md q-ml-md">
+        <q-btn icon="arrow_back" round flat to="/" />
+        <span class="text-subtitle1 grow"> Create an account </span>
+        <div style="width: 40px" />
+      </div>
       <q-card-section>
         <q-input
-          label="Email *"
+          label="Email"
           v-model="email"
-          :rules="[(val) => validateEmail(val) || 'Must be a valid email.']"
+          :rules="[(val) => validateEmail(val)]"
+          lazy-rules
         ></q-input>
         <q-input
-          :label="t('Password *')"
+          :label="t('Password')"
           v-model="password"
           :type="isPwd ? 'password' : 'text'"
           :rules="[
             (v) => v.length >= 8 || 'Password must be 8 digits or longer',
-            (v) => v.length <= 255 || t('createaccount.maxChars'),
           ]"
           lazy-rules
         >
@@ -26,15 +27,14 @@
               :name="isPwd ? 'visibility_off' : 'visibility'"
               class="cursor-pointer"
               @click="isPwd = !isPwd"
-            /> </template
-        ></q-input>
+            />
+          </template>
+        </q-input>
         <q-input
-          :label="t('Full Name *')"
+          :label="t('Full Name')"
           v-model="fullName"
-          :rules="[
-            (v) => v.length <= 255 || t('createaccount.maxChars'),
-            (val) => (val && val.length > 0) || 'Name must be filled in.',
-          ]"
+          maxlength="255"
+          :rules="[(v) => !!v]"
           lazy-rules
         />
 
@@ -78,82 +78,63 @@
           :label="t('Tax Number')"
           v-model="taxNumber"
           mask="#########"
-          :rules="[
-            (v) => v.length >= 9 || t('createaccount.nineNumbers'),
-            (v) => v.length <= 255 || t('createaccount.maxChars'),
-          ]"
-
+          :rules="[(v) => !!v]"
           lazy-rules
         />
         <q-input
           :label="t('ID Number')"
           v-model="idNumber"
-          mask="########"
-          :rules="[
-            (v) => v.length >= 8 || t('createaccount.eightNumbers'),
-            (v) => v.length <= 255 || t('createaccount.maxChars'),
-          ]"
+          maxlength="255"
+          :rules="[(v) => !!v]"
           lazy-rules
         />
 
-
-        <span class="text-center" style="max-width: 250px">
-          {{ t('createaccount.address') }}
-        </span>
-        <div class="q-pa-xs"></div>
+        <div class="q-mt-lg">Address</div>
         <q-input
           :label="t('Address line 1')"
           v-model="line1"
-          :rules="[(v) => v.length <= 255 || t('createaccount.maxChars')]"
+          maxlength="255"
+          :rules="[(v) => !!v]"
           lazy-rules
         />
         <q-input
           :label="t('Address line 2')"
           v-model="line2"
-          :rules="[(v) => v.length <= 255 || t('createaccount.maxChars')]"
+          maxlength="255"
           lazy-rules
+          class="q-mb-md"
         />
-        <div class="q-gutter-md">
-          <q-input
-            :label="t('Postal Code')"
-            v-model="zipCode"
-            mask="####-###"
-            :rules="[(val) => validateZipCode(val) || 'invalid.zipCode']"
-          />
-        </div>
-        <div class="q-pa-xs"></div>
-
         <q-input
-          :label="t('City *')"
+          :label="t('Postal Code')"
+          v-model="zipCode"
+          mask="####-###"
+          :rules="[(val) => validateZipCode(val)]"
+        />
+        <q-input
+          :label="t('City')"
           v-model="city"
-          :rules="[
-            (v) => v.length <= 255 || t('createaccount.maxChars'),
-            (val) => (val && val.length > 0) || 'Name must be filled in.',
-          ]"
+          maxlength="255"
+          :rules="[(v) => !!v]"
           lazy-rules
         />
-
         <q-input
-          :label="t('District *')"
+          :label="t('District')"
           v-model="district"
-          :rules="[
-            (v) => v.length <= 255 || t('createaccount.maxChars'),
-            (val) => (val && val.length > 0) || 'Name must be filled in.',
-          ]"
+          maxlength="255"
+          :rules="[(v) => !!v]"
           lazy-rules
         />
-
         <q-card-section class="q-mt-xs full-width">
           <q-btn
             :label="t('login.createaccount')"
             color="primary"
-            @click="createAccount"
+            type="submit"
             class="full-width"
           />
         </q-card-section>
       </q-card-section>
     </q-card>
-  </q-page>
+  </q-form>
 </template>
 
 <script setup lang="ts">
@@ -165,24 +146,20 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 const { t } = useI18n();
-const email = ref(null as null | string);
-const password = ref(null as null | string);
-const fullName = ref(null as null | string);
-const birthdate = ref('2000-01-01');
-const taxNumber = ref(null as null | string);
-const idNumber = ref(null as null | string);
-const line1 = ref(null as null | string);
-const line2 = ref(null as null | string);
-const zipCode = ref(null as null | string);
-const city = ref(null as null | string);
-const district = ref(null as null | string);
+const email = ref('');
+const password = ref('');
+const fullName = ref('');
+const birthdate = ref('');
+const taxNumber = ref('');
+const idNumber = ref('');
+const line1 = ref('');
+const line2 = ref('');
+const zipCode = ref('');
+const city = ref('');
+const district = ref('');
 const isPwd = ref(true);
 const $q = useQuasar();
 const $router = useRouter();
-
-// function login() {
-//   alert('teste');Postalcode
-// }
 
 function isOver18(birthday: string) {
   const now = new Date();
@@ -222,25 +199,21 @@ async function createAccount() {
       message: t('account.created'),
       color: 'positive',
     });
-  } catch (e: AxiosError) {
+  } catch (e) {
     console.log(e);
-    if (e.response?.status === 400) {
+    const error = e as AxiosError;
+    if (error.response?.status === 400) {
       let message = '';
-      for (const error of e.response.data.fieldErrors) {
-        message += t(`${error.field}.${error.errorCode}`) + '\n';
+      for (const errorMsg of error.response?.data.fieldErrors) {
+        message += t(`${errorMsg.field}.${errorMsg.errorCode}`) + '\n';
       }
       $q.notify({
         message,
         color: 'negative',
       });
-    } else if (e.response?.status === 409) {
+    } else if (error.response?.status === 409) {
       $q.notify({
         message: t('register.taken'),
-        color: 'negative',
-      });
-    } else if (e.response?.status === 403) {
-      $q.notify({
-        message: t('zip-code.invalid'),
         color: 'negative',
       });
     } else {
@@ -252,7 +225,7 @@ async function createAccount() {
   }
 }
 async function validateEmail(email: string): Promise<boolean> {
-  return /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(email);
+  return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email);
 }
 
 async function validateZipCode(zipCode: string): Promise<boolean> {
