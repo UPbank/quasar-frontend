@@ -8,7 +8,7 @@
         class="column items-center justify-center q-gutter-y-xl"
         id="page"
       >
-        <q-img src="logo-filled.svg" width="150px" />
+        <q-img src="logo-white-backdrop.svg" width="150px" />
         <router-view />
       </q-page>
     </q-page-container>
