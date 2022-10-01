@@ -1,6 +1,7 @@
 <template>
-  <q-card>
-    <q-form @submit="login()">
+  <q-form @submit="login()" class="column items-center">
+    <q-img src="logo-white-backdrop.svg" width="150px" class="q-mb-xl" />
+    <q-card>
       <q-card-section>
         <q-input
           :label="t('login.email')"
@@ -34,12 +35,10 @@
           :label="t('login.createaccount')"
           class="q-mt-md"
           flat
-          color="secondary"
           to="/createaccount"
         />
-      </q-card-section>
-    </q-form>
-  </q-card>
+      </q-card-section> </q-card
+  ></q-form>
 </template>
 
 <script setup lang="ts">
