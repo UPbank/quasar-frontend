@@ -71,7 +71,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/national-transfer',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/HasBackLayout.vue'),
     children: [
       { path: '', component: () => import('pages/MoneyTransfersPage.vue') },
     ],
