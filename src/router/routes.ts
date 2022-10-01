@@ -11,6 +11,13 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/OverView.vue') }],
   },
+  {
+    path: '/transfers',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/TransfersIndex.vue') },
+    ],
+  },
 
   {
     path: '/createaccount',
@@ -63,7 +70,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/moneytransfers',
+    path: '/national-transfer',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/MoneyTransfersPage.vue') },
