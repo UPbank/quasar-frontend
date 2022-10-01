@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header reveal class="bg-secondary text-white">
+    <q-header reveal class="text-white">
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
         <q-toolbar-title> Overview </q-toolbar-title>
@@ -50,8 +50,8 @@
         <router-view />
       </q-page>
     </q-page-container>
-    <q-footer class="bg-dark" bordered>
-      <q-tabs>
+    <q-footer class="bg-dark row justify-center" elevated>
+      <q-tabs align="justify" style="max-width: 1000px; width: 100%">
         <q-route-tab icon="home" to="/home" label="Home" />
         <q-route-tab icon="swap_vert" to="/transfers" label="Transfers" />
         <q-route-tab icon="credit_card" to="/cards" label="Cards" />

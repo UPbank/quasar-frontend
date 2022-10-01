@@ -1,43 +1,45 @@
 <template>
-  <q-page class="column items-center justify-center q-gutter-y-xl">
-    <q-img src="logo-square.svg" style="max-width: 200px" />
-    <q-card>
-      <q-form @submit="login()">
-        <q-card-section>
-          <q-input
-            :label="t('login.email')"
-            v-model="email"
-            type="email"
-            :rules="[(val) => validateEmail(val) || 'Must be a valid email.']"
-          />
-          <q-input
-            :label="t('login.password')"
-            v-model="password"
-            :type="isPwd ? 'password' : 'text'"
-            lazy-rules
-          >
-            <template v-slot:append>
-              <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-          </q-input>
-        </q-card-section>
-        <q-card-section class="column justify-center">
-          <q-btn :label="t('login.login')" color="secondary" type="submit" />
-          <q-btn
-            :label="t('login.createaccount')"
-            class="q-mt-md"
-            flat
-            color="primary"
-            to="/createaccount"
-          />
-        </q-card-section>
-      </q-form>
-    </q-card>
-  </q-page>
+  <q-card>
+    <q-form @submit="login()">
+      <q-card-section>
+        <q-input
+          :label="t('login.email')"
+          v-model="email"
+          type="email"
+          :rules="[(val) => validateEmail(val) || 'Must be a valid email.']"
+        />
+        <q-input
+          :label="t('login.password')"
+          v-model="password"
+          :type="isPwd ? 'password' : 'text'"
+          lazy-rules
+        >
+          <template v-slot:append>
+            <q-icon
+              :name="isPwd ? 'visibility_off' : 'visibility'"
+              class="cursor-pointer"
+              @click="isPwd = !isPwd"
+            />
+          </template>
+        </q-input>
+      </q-card-section>
+      <q-card-section class="column justify-center">
+        <q-btn
+          :label="t('login.login')"
+          color="primary"
+          type="submit"
+          :loading="loading"
+        />
+        <q-btn
+          :label="t('login.createaccount')"
+          class="q-mt-md"
+          flat
+          color="secondary"
+          to="/createaccount"
+        />
+      </q-card-section>
+    </q-form>
+  </q-card>
 </template>
 
 <script setup lang="ts">
@@ -51,6 +53,7 @@ import { useRouter } from 'vue-router';
 const { t } = useI18n();
 const email = ref('random@upbank.pt');
 const password = ref('string');
+const loading = ref(false);
 const isPwd = ref(true);
 const $q = useQuasar();
 const $router = useRouter();
@@ -62,6 +65,7 @@ function validateEmail(email: string): boolean {
 async function login() {
   //success
   try {
+    loading.value = true;
     const result = await api.post('/authenticate', {
       email: email.value,
       password: password.value,
@@ -80,7 +84,8 @@ async function login() {
 
     //error
   } catch (e) {
-    console.log(e);
+    loading.value = false;
+    console.error(e);
     if ((e as AxiosError).response?.status === 401) {
       $q.notify({
         message: t('login.incorrect'),
