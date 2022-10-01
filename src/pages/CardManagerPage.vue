@@ -3,7 +3,7 @@
     <q-card>
       <q-card-section>
         <div
-          class="column justify-between bg-black text-white q-pa-md"
+          class="column justify-between text-white q-pa-md credit-card"
           style="border-radius: 15px; aspect-ratio: 1.59; min-width: 250px"
         >
           <div class="column q-pa-sm q-mb-md">
@@ -78,6 +78,7 @@ function getCard() {
   api
     .get('/api/cards/')
     .then((response) => {
+      console.log(response.data);
       cards.value = response.data;
     })
     .catch((error) => {
@@ -175,3 +176,9 @@ function changePin(card) {
   });
 }
 </script>
+<style lang="scss" scoped>
+.credit-card {
+  background: linear-gradient($primary, $secondary);
+  text-shadow: 0 0 3px rgba(0, 0, 0, 1);
+}
+</style>
