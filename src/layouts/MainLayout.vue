@@ -7,7 +7,7 @@
       <q-page
         padding
         class="column items-center"
-        style="max-width: 1440px; margin-top: 50px"
+        style="max-width: 1440px; padding-top: 50px"
       >
         <router-view />
       </q-page>
@@ -24,25 +24,51 @@
 </template>
 
 <style lang="scss">
-#page-container {
-  background: linear-gradient(
-      35deg,
-      rgba($accent, 0.2) 1%,
-      rgba(255, 255, 255, 0) 30%,
-      $dark-page
-    ),
-    linear-gradient(
-      to top,
-      rgba($primary, 0.4) 1%,
-      rgba(255, 255, 255, 0) 40%,
-      $dark-page
-    ),
-    linear-gradient(
-        -35deg,
-        rgba($secondary, 0.2) 1%,
+.body--dark {
+  #page-container {
+    background: linear-gradient(
+        35deg,
+        rgba($accent, 0.2) 1%,
         rgba(255, 255, 255, 0) 30%,
         $dark-page
-      )
-      $dark-page;
+      ),
+      linear-gradient(
+        to top,
+        rgba($primary, 0.4) 1%,
+        rgba(255, 255, 255, 0) 40%,
+        $dark-page
+      ),
+      linear-gradient(
+          -35deg,
+          rgba($secondary, 0.2) 1%,
+          rgba(255, 255, 255, 0) 30%,
+          $dark-page
+        )
+        $dark-page;
+  }
+}
+
+.body--light {
+  #page-container {
+    background: linear-gradient(
+        35deg,
+        rgba($accent, 0.2) 1%,
+        rgba(255, 255, 255, 0) 20%,
+        #fff
+      ),
+      linear-gradient(
+        to top,
+        rgba($primary, 0.4) 1%,
+        rgba(255, 255, 255, 0) 40%,
+        #fff
+      ),
+      linear-gradient(
+          -35deg,
+          rgba($secondary, 0.2) 1%,
+          rgba(255, 255, 255, 0) 20%,
+          #fff
+        )
+        #fff;
+  }
 }
 </style>
