@@ -41,7 +41,7 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container>
+    <q-page-container class="column items-center full-width">
       <q-page
         padding
         class="column items-center"
