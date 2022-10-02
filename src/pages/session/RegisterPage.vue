@@ -41,6 +41,7 @@
           v-model="formData.birthdate"
           mask="date"
           :rules="['date', (v) => isOver18(v) || 'register.under18']"
+          lazy-rules
         >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
@@ -107,6 +108,7 @@
           v-model="formData.address.postalCode"
           mask="####-###"
           :rules="[(val) => validateZipCode(val)]"
+          lazy-rules
         />
         <q-input
           :label="t('City')"

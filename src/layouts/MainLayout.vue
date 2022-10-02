@@ -1,13 +1,20 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header class="bg-dark" v-if="false">
-      <q-toolbar>
-        <q-btn flat dense round icon="arrow_back" @click="$router.back()" />
-        <q-toolbar-title>
-          <span class="q-ml-sm">Transfer</span>
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-header>
+    <transition
+      enter-active-class="animated fadeIn"
+      leave-active-class="animated fadeOut"
+      appear
+      :duration="300"
+    >
+      <q-header class="bg-dark" v-if="previous">
+        <q-toolbar>
+          <q-btn flat dense round icon="arrow_back" @click="$router.back()" />
+          <q-toolbar-title>
+            <span class="q-ml-sm">{{ name }}</span>
+          </q-toolbar-title>
+        </q-toolbar>
+      </q-header>
+    </transition>
     <q-page-container
       class="column items-center full-width"
       id="page-container"
@@ -34,9 +41,15 @@
 <script setup lang="ts">
 import { useAccountStore } from 'src/stores/account-store';
 import { useQuasar } from 'quasar';
+import { useRoute } from 'vue-router';
+import { computed } from 'vue';
 
 const $q = useQuasar();
 const accounts = useAccountStore();
+const $route = useRoute();
+
+const name = computed(() => $route.meta.name);
+const previous = computed(() => $route.meta.previous);
 
 accounts.initialize().catch(() => {
   $q.notify({

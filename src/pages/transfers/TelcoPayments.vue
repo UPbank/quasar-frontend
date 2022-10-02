@@ -1,91 +1,188 @@
 <template>
-  <div class="q-pa-xl"></div>
-  <q-card class="text-caption" size="dense" bordered>
-    <q-card-section padding class="column items-center">
-      <div>{{ $t('TELCO Payments') }}</div>
-      <div class="q-pa-md">
-        <div>{{ $t('Operator') }}</div>
-        <div class="q-gutter-xl">
-          <q-select
-            filled
-            v-model="provider"
-            :options="options"
-            option-label="name"
-            option-value="name"
-            emit-values
-            map-options
-          />
-        </div>
-        <div>{{ $t('Mobile') }}</div>
-        <q-input outlined v-model.number="phone" mask="#########" />
-        <div>{{ $t('Amount') }}</div>
-        <q-input
-          outlined
-          v-model.number="amount"
-          dense
-          mask="##.##€"
-          style="max-width: 80px"
-        />
-      </div>
-    </q-card-section>
+  <transition enter-active-class="animated fadeIn" appear :duration="300">
+    <q-form @submit="slide == 'confirm' ? send() : (slide = 'confirm')">
+      <h3 class="q-mt-sm text-center">
+        {{ t('transfers.telco_payment') }}
+      </h3>
+      <q-card class="text-caption" size="dense">
+        <q-card-section>
+          <q-carousel
+            v-model="slide"
+            transition-prev="slide-right"
+            transition-next="slide-left"
+            animated
+          >
+            <q-carousel-slide
+              name="input"
+              class="column justify-center items-center"
+            >
+              <span
+                class="q-mb-md"
+                :class="{
+                  'text-negative':
+                    amount &&
+                    accounts.active &&
+                    amount > accounts.active.balance,
+                }"
+              >
+                {{ t('account.balance') }}:
+                <template v-if="accounts.active">
+                  {{ (accounts.active.balance / 100).toFixed(2) }}€
+                </template>
+                <q-spinner v-else />
+              </span>
+              <q-input
+                v-model.number="amount"
+                maxlength="9"
+                mask="#.##€"
+                fill-mask="0"
+                max-val="1000000"
+                reverse-fill-mask
+                unmasked-value
+                borderless
+                no-error-icon
+                :rules="[
+                  (v) => !!v,
+                  (v) => !accounts.active || v <= accounts.active.balance,
+                ]"
+                :size="(amount || 0).toFixed(2).length - 1"
+                :input-class="
+                  (!amount && triedSubmit) ||
+                  (amount &&
+                    accounts.active &&
+                    amount > accounts.active.balance)
+                    ? 'text-center text-h4 text-negative'
+                    : 'text-center text-h4'
+                "
+              />
+              <q-select
+                :label="t('transfers.provider')"
+                v-model="provider"
+                :options="providerOptions"
+                emit-value
+                map-options
+                option-value="id"
+                option-label="name"
+                class="full-width"
+                :rules="[(v) => !!v]"
+                :loading="!providerOptions"
+              />
+              <q-input
+                v-model="phoneNumber"
+                :label="t('transfers.phone_number')"
+                mask="### ### ###"
+                class="full-width"
+                unmasked-value
+                lazy-rules
+                :rules="[
+                  (v) => v.length === 9,
+                  (v) => v.charAt(0) === '9',
+                  (v) => ['1', '2', '3', '6'].includes(v.charAt(1)),
+                ]"
+              />
+            </q-carousel-slide>
+            <q-carousel-slide
+              name="confirm"
+              class="column justify-center items-center"
+            >
+              <h6 class="q-my-md">{{ t('transfers.amount') }}</h6>
+              <div class="text-subtitle1 q-mb-md">
+                {{ ((amount || 0) / 100).toFixed(2) }}€
+              </div>
 
-    <q-card-section class="text-center">
-      <q-btn
-        unelevated
-        rounded
-        color="primary"
-        :label="t('Continue')"
-        @click="send"
-      />
-    </q-card-section>
-  </q-card>
+              <q-separator />
+
+              <h6 class="q-my-md">{{ t('transfers.provider') }}</h6>
+              <div class="text-subtitle1 q-mb-md">
+                {{ provider }}
+              </div>
+
+              <h6 class="q-my-md">{{ t('transfers.phone_number') }}</h6>
+              <div class="text-subtitle1 q-mb-md">
+                {{ phoneNumber }}
+              </div>
+            </q-carousel-slide>
+          </q-carousel>
+        </q-card-section>
+
+        <q-card-actions align="between" class="q-px-lg q-pb-lg">
+          <q-btn
+            flat
+            icon="arrow_back"
+            v-if="slide == 'confirm'"
+            @click="slide = 'input'"
+          />
+          <div v-else />
+          <q-btn
+            :icon-right="slide == 'confirm' ? 'send' : 'arrow_forward'"
+            color="primary"
+            :label="
+              slide == 'confirm'
+                ? t('transfers.send')
+                : t('transfers.confirmation')
+            "
+            type="submit"
+            @click="triedSubmit = true"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-form>
+  </transition>
 </template>
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { useAccountStore } from 'src/stores/account-store';
 
-const $q = useQuasar();
 const { t } = useI18n();
+const $q = useQuasar();
+const $router = useRouter();
+
+const accounts = useAccountStore();
 
 const provider = ref(null as null | number);
-const phone = ref(null as null | number);
-const amount = ref(null as null | number);
-// const format = (val: number) => `${(val / 100).toFixed(2)} €`;
-const model = ref(null);
+const providerOptions = ref([] as { id: number; name: string }[]);
 
-const options = ref([]);
-
-api.get('/api/telcoProviders/').then((response) => {
-  options.value = response.data;
+api.get('telco-providers').then((response) => {
+  providerOptions.value = response.data;
 });
-function send() {
-  if (provider.value == null) return;
-  if (phone.value == null) return;
-  if (amount.value == null) return;
+const phoneNumber = ref('');
+const amount = ref(null as null | number);
 
-  api
-    .post('/api/transfers/telcoPayments/', {
-      provider: provider.value.name,
-      phoneNumber: phone.value,
+const slide = ref('input');
+const triedSubmit = ref(false);
+
+const loading = ref(false);
+
+async function send() {
+  if (amount.value == null) return;
+  try {
+    loading.value = true;
+    await api.post('/telco-payments/', {
+      provider: provider.value,
+      phoneNumber: phoneNumber.value,
       amount: amount.value,
-    })
-    .then(() => {
-      $q.notify({
-        message: 'Transfer sent successfuly',
-        color: 'positive',
-      });
-    })
-    .catch((error) => {
-      if (error.response) {
-        return $q.notify({
-          message: error.response.data.exception,
-          color: 'negative',
-        });
-      }
-      $q.notify({ message: t('badRequest.error'), color: 'negative' });
     });
+
+    if (accounts.active)
+      accounts.active.balance = accounts.active.balance - amount.value;
+    else console.error('NO ACTIVE ACCOUNT');
+
+    $q.notify({
+      message: t('transfer.success'),
+      color: 'positive',
+    });
+
+    $router.push('/home');
+  } catch {
+    $q.notify({
+      message: t('errors.telco_payment'),
+      color: 'negative',
+    });
+  }
 }
 </script>

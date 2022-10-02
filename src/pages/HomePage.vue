@@ -1,66 +1,68 @@
 <template>
-  <div class="column items-center full-width">
-    <q-card class="q-mb-md">
-      <q-card-section class="column items-center">
-        <div>Balance</div>
-        <div v-if="accounts.active" class="text-h5">
-          {{ (accounts.active.balance / 100).toFixed(2) }}€
-        </div>
-        <q-spinner v-else size="lg" class="q-mt-md" />
-      </q-card-section>
-    </q-card>
-    <q-card>
-      <q-card-section class="row">
-        <q-select
-          item-aligned
-          style="max-width: 300px"
-          v-model="typeFilter"
-          :options="options"
-          emit-value
-          map-options
-        />
-        <q-input
-          style="width: 300px"
-          class="col self-center"
-          v-model="filter"
-          placeholder="Search"
-          debounce="500"
-        >
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-      </q-card-section>
-    </q-card>
+  <transition enter-active-class="animated fadeIn" appear :duration="500">
+    <div class="column items-center full-width">
+      <q-card class="q-mb-md">
+        <q-card-section class="column items-center">
+          <div>Balance</div>
+          <div v-if="accounts.active" class="text-h5">
+            {{ (accounts.active.balance / 100).toFixed(2) }}€
+          </div>
+          <q-spinner v-else size="lg" class="q-mt-md" />
+        </q-card-section>
+      </q-card>
+      <q-card>
+        <q-card-section class="row">
+          <q-select
+            item-aligned
+            style="max-width: 300px"
+            v-model="typeFilter"
+            :options="options"
+            emit-value
+            map-options
+          />
+          <q-input
+            style="width: 300px"
+            class="col self-center"
+            v-model="filter"
+            placeholder="Search"
+            debounce="500"
+          >
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </q-card-section>
+      </q-card>
 
-    <q-infinite-scroll
-      @load="onLoad"
-      :offset="250"
-      :disable="!hasMorePages && queryString == prevQueryString"
-      class="full-width column items-center q-mt-sm"
-      :key="queryString"
-    >
-      <transfer-item
-        v-for="transaction in transfers"
-        :name="getTransactionName(transaction)"
-        :key="transaction.id"
-        :amount="`${transaction.type == 'INCOME' ? '+' : '-'}${(
-          transaction.amount / 100
-        ).toFixed(2)} €`"
-        :time="
-          new Date(transaction.date).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          })
-        "
-      />
-      <template v-slot:loading>
-        <div class="row justify-center q-my-md">
-          <q-spinner-dots color="primary" size="40px" />
-        </div>
-      </template>
-    </q-infinite-scroll>
-  </div>
+      <q-infinite-scroll
+        @load="onLoad"
+        :offset="250"
+        :disable="!hasMorePages && queryString == prevQueryString"
+        class="full-width column items-center q-mt-sm"
+        :key="queryString"
+      >
+        <transfer-item
+          v-for="transaction in transfers"
+          :name="getTransactionName(transaction)"
+          :key="transaction.id"
+          :amount="`${transaction.type == 'INCOME' ? '+' : '-'}${(
+            transaction.amount / 100
+          ).toFixed(2)} €`"
+          :time="
+            new Date(transaction.date).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })
+          "
+        />
+        <template v-slot:loading>
+          <div class="row justify-center q-my-md">
+            <q-spinner-dots color="primary" size="40px" />
+          </div>
+        </template>
+      </q-infinite-scroll>
+    </div>
+  </transition>
 </template>
 
 <script setup lang="ts">
@@ -101,7 +103,7 @@ const endDate = ref('');
 const nextPage = ref(null as null | string);
 
 function getSymbol(currString: string) {
-  return currString + (currString == '' ? '?' : '&');
+  return currString + (currString == '' ? '' : '&');
 }
 
 let prevQueryString = ref('');
@@ -132,9 +134,11 @@ async function onLoad(page: number, callback: () => void) {
       hasMorePages.value = true;
     }
     if (nextPage.value != null) {
-      query = `${getSymbol(query)}cursor=${nextPage.value}`;
+      query = `${nextPage.value}${query.substring(1)}`;
+    } else {
+      query = `transfers/?${query}`;
     }
-    const response = await api.get(`transfers/${query}`);
+    const response = await api.get(query);
     transfers.value = [...(transfers.value || []), ...response.data.results];
     nextPage.value = response.data.next;
     if (nextPage.value == null) {
