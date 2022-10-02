@@ -9,17 +9,15 @@
       <q-card-section>
         <q-input
           label="Email"
-          v-model="email"
+          v-model="formData.email"
           :rules="[(val) => validateEmail(val)]"
           lazy-rules
         ></q-input>
         <q-input
           :label="t('Password')"
-          v-model="password"
+          v-model="formData.password"
           :type="isPwd ? 'password' : 'text'"
-          :rules="[
-            (v) => v.length >= 8 || 'Password must be 8 digits or longer',
-          ]"
+          :rules="[(v) => v.length >= 8 || 'register.password_len']"
           lazy-rules
         >
           <template v-slot:append>
@@ -32,7 +30,7 @@
         </q-input>
         <q-input
           :label="t('Full Name')"
-          v-model="fullName"
+          v-model="formData.fullName"
           maxlength="255"
           :rules="[(v) => !!v]"
           lazy-rules
@@ -40,9 +38,9 @@
 
         <q-input
           :label="t('Birthdate')"
-          v-model="birthdate"
+          v-model="formData.birthdate"
           mask="date"
-          :rules="['date']"
+          :rules="['date', (v) => isOver18(v) || 'register.under18']"
         >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
@@ -54,7 +52,7 @@
                 <q-date
                   rounded
                   standout
-                  v-model="birthdate"
+                  v-model="formData.birthdate"
                   dense
                   :options="isOver18"
                 >
@@ -76,14 +74,14 @@
 
         <q-input
           :label="t('Tax Number')"
-          v-model="taxNumber"
+          v-model="formData.taxNumber"
           mask="#########"
           :rules="[(v) => !!v]"
           lazy-rules
         />
         <q-input
           :label="t('ID Number')"
-          v-model="idNumber"
+          v-model="formData.idNumber"
           maxlength="255"
           :rules="[(v) => !!v]"
           lazy-rules
@@ -92,34 +90,34 @@
         <div class="q-mt-lg">Address</div>
         <q-input
           :label="t('Address line 1')"
-          v-model="line1"
+          v-model="formData.address.lineOne"
           maxlength="255"
           :rules="[(v) => !!v]"
           lazy-rules
         />
         <q-input
           :label="t('Address line 2')"
-          v-model="line2"
+          v-model="formData.address.lineTwo"
           maxlength="255"
           lazy-rules
           class="q-mb-md"
         />
         <q-input
           :label="t('Postal Code')"
-          v-model="zipCode"
+          v-model="formData.address.postalCode"
           mask="####-###"
           :rules="[(val) => validateZipCode(val)]"
         />
         <q-input
           :label="t('City')"
-          v-model="city"
+          v-model="formData.address.city"
           maxlength="255"
           :rules="[(v) => !!v]"
           lazy-rules
         />
         <q-input
           :label="t('District')"
-          v-model="district"
+          v-model="formData.address.district"
           maxlength="255"
           :rules="[(v) => !!v]"
           lazy-rules
@@ -146,17 +144,21 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 const { t } = useI18n();
-const email = ref('');
-const password = ref('');
-const fullName = ref('');
-const birthdate = ref('');
-const taxNumber = ref('');
-const idNumber = ref('');
-const line1 = ref('');
-const line2 = ref('');
-const zipCode = ref('');
-const city = ref('');
-const district = ref('');
+const formData = ref({
+  email: '',
+  password: '',
+  fullName: '',
+  birthdate: '',
+  taxNumber: '',
+  idNumber: '',
+  address: {
+    lineOne: '',
+    lineTwo: '',
+    postalCode: '',
+    city: '',
+    district: '',
+  },
+});
 const isPwd = ref(true);
 const $q = useQuasar();
 const $router = useRouter();
@@ -179,22 +181,18 @@ function isOver18(birthday: string) {
 
 async function createAccount() {
   try {
-    await api.post('/register', {
-      email: email.value,
-      password: password.value,
-      fullName: fullName.value,
-      birthdate: birthdate.value,
-      taxNumber: taxNumber.value,
-      idNumber: idNumber.value,
-      address: {
-        line1: line1.value,
-        line2: line2.value,
-        zipCode: zipCode.value,
-        city: city.value,
-        district: district.value,
-      },
+    await api.post('/accounts/', {
+      ...formData.value,
+      birthdate: formData.value.birthdate.replace(/\//g, '-'),
     });
-    $router.push('/');
+    const result = await api.post('/auth/login', {
+      username: formData.value.email,
+      password: formData.value.password,
+    });
+
+    api.defaults.headers.Authorization = `Token ${result.data['token']}`;
+
+    $router.push('/home');
     $q.notify({
       message: t('account.created'),
       color: 'positive',

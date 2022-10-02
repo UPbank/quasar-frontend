@@ -13,6 +13,15 @@
   </q-layout>
 </template>
 
+<script lang="ts" setup>
+import { api } from 'src/boot/axios';
+import { useRouter } from 'vue-router';
+const $router = useRouter();
+if (api.defaults.headers.Authorization) {
+  $router.replace('/home');
+}
+</script>
+
 <style lang="scss" scoped>
 #page {
   background: linear-gradient(-15deg, #fac05e, #328fba, #59cd90, #fac05e);
