@@ -29,10 +29,18 @@
     </q-page-container>
     <q-footer class="bg-dark row justify-center" elevated>
       <q-tabs align="justify" style="max-width: 1000px; width: 100%">
-        <q-route-tab icon="home" to="/home" label="Home" />
-        <q-route-tab icon="swap_vert" to="/transfers" label="Transfers" />
-        <q-route-tab icon="credit_card" to="/cards" label="Cards" />
-        <q-route-tab icon="person" to="/account" label="Account" />
+        <q-route-tab icon="home" to="/home" :label="t('routes.home')" />
+        <q-route-tab
+          icon="swap_vert"
+          to="/transfers"
+          :label="t('routes.transfers')"
+        />
+        <q-route-tab
+          icon="credit_card"
+          to="/cards"
+          :label="t('routes.cards')"
+        />
+        <q-route-tab icon="person" to="/account" :label="t('routes.account')" />
       </q-tabs>
     </q-footer>
   </q-layout>
@@ -43,10 +51,13 @@ import { useAccountStore } from 'src/stores/account-store';
 import { useQuasar } from 'quasar';
 import { useRoute } from 'vue-router';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const $q = useQuasar();
 const accounts = useAccountStore();
 const $route = useRoute();
+
+const { t } = useI18n();
 
 const name = computed(() => $route.meta.name);
 const previous = computed(() => $route.meta.previous);

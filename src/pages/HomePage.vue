@@ -3,7 +3,7 @@
     <div class="column items-center full-width">
       <q-card class="q-mb-md">
         <q-card-section class="column items-center">
-          <div>Balance</div>
+          <div>{{ t('account.balance') }}</div>
           <div v-if="accounts.active" class="text-h5">
             {{ (accounts.active.balance / 100).toFixed(2) }}€
           </div>
@@ -11,7 +11,7 @@
         </q-card-section>
       </q-card>
       <q-card>
-        <q-card-section class="row">
+        <q-card-section class="row justify-center items-center">
           <q-select
             item-aligned
             style="max-width: 300px"
@@ -24,13 +24,33 @@
             style="width: 300px"
             class="col self-center"
             v-model="filter"
-            placeholder="Search"
+            :placeholder="t('transfers.search')"
             debounce="500"
           >
             <template v-slot:append>
               <q-icon name="search" />
             </template>
           </q-input>
+          <q-btn icon="event" class="q-ml-sm" round flat>
+            <q-popup-proxy
+              cover
+              transition-show="scale"
+              transition-hide="scale"
+            >
+              <q-date rounded standout v-model="date" range dense>
+                <div class="row items-center justify-end">
+                  <q-btn
+                    rounded
+                    standout
+                    v-close-popup
+                    label="Close"
+                    color="primary"
+                    flat
+                  />
+                </div>
+              </q-date>
+            </q-popup-proxy>
+          </q-btn>
         </q-card-section>
       </q-card>
 
@@ -42,17 +62,24 @@
         :key="queryString"
       >
         <transfer-item
-          v-for="transaction in transfers"
-          :name="getTransactionName(transaction)"
-          :key="transaction.id"
-          :amount="`${transaction.type == 'INCOME' ? '+' : '-'}${(
-            transaction.amount / 100
+          v-for="(transfer, index) in transfers"
+          :name="getTransactionName(transfer)"
+          :key="transfer.id"
+          :amount="`${transfer.type == 'INCOME' ? '+' : '-'}${(
+            transfer.amount / 100
           ).toFixed(2)} €`"
           :time="
-            new Date(transaction.date).toLocaleTimeString([], {
+            new Date(transfer.date).toLocaleTimeString([], {
               hour: '2-digit',
               minute: '2-digit',
             })
+          "
+          :day="
+            index == 0 ||
+            transfer.date.substring(0, 10) !=
+              transfers[index - 1].date.substring(0, 10)
+              ? new Date(transfer.date).toLocaleDateString()
+              : ''
           "
         />
         <template v-slot:loading>
@@ -82,23 +109,22 @@ const hasMorePages = ref(true);
 const typeFilter = ref('none');
 const filter = ref('');
 
-const options = [
+const options = computed(() => [
   {
-    label: 'Show all transactions',
+    label: t('transfers.all'),
     value: 'none',
   },
   {
-    label: 'Income',
+    label: t('transfers.income'),
     value: 'INCOME',
   },
   {
-    label: 'Expense',
+    label: t('transfers.expense'),
     value: 'EXPENSE',
   },
-];
+]);
 
-const startDate = ref('');
-const endDate = ref('');
+const date = ref({} as { from?: string; to?: string });
 
 const nextPage = ref(null as null | string);
 
@@ -115,11 +141,15 @@ const queryString = computed(() => {
   if (filter.value != '') {
     result = `${getSymbol(result)}fromTo=${filter.value}`;
   }
-  if (startDate.value != '') {
-    result = `${getSymbol(result)}minDate=${startDate.value}`;
-  }
-  if (startDate.value != '') {
-    result = `${getSymbol(result)}maxDate=${endDate.value}`;
+  if (date.value.from && date.value.to) {
+    result = `${getSymbol(result)}minDate=${date.value.from?.replace(
+      /\//g,
+      '-'
+    )}`;
+    result = `${getSymbol(result)}maxDate=${date.value.to?.replace(
+      /\//g,
+      '-'
+    )}`;
   }
   return result;
 });
@@ -134,7 +164,7 @@ async function onLoad(page: number, callback: () => void) {
       hasMorePages.value = true;
     }
     if (nextPage.value != null) {
-      query = `${nextPage.value}${query.substring(1)}`;
+      query = `${nextPage.value}`;
     } else {
       query = `transfers/?${query}`;
     }
