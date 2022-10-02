@@ -29,7 +29,6 @@
             />
             <q-input
               v-model="iban"
-              style="max-width: 260px"
               label="IBAN"
               prefix="PT50"
               mask="#### #### #### ####### ##"
@@ -44,7 +43,7 @@
               label="Note"
               autogrow
               class="full-width q-my-md"
-              maxlength="128"
+              maxlength="80"
             />
           </q-carousel-slide>
           <q-carousel-slide
