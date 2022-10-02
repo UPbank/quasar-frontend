@@ -7,7 +7,7 @@
         clickable
         v-ripple
         class="transfer-item"
-        :to="'/national-transfer'"
+        :to="'/transfers/national-transfers'"
       >
         <q-item-section avatar>
           <q-icon name="paid" size="md" />

@@ -31,6 +31,22 @@
   </q-layout>
 </template>
 
+<script setup lang="ts">
+import { useAccountStore } from 'src/stores/account-store';
+import { useQuasar } from 'quasar';
+
+const $q = useQuasar();
+const accounts = useAccountStore();
+
+accounts.initialize().catch(() => {
+  $q.notify({
+    message: 'error.unknown',
+    type: 'negative',
+  });
+  window.location.href = '/';
+});
+</script>
+
 <style lang="scss">
 .body--dark {
   #page-container {

@@ -37,7 +37,7 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: '/national-transfers',
+    path: '/transfers/national-transfers',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {

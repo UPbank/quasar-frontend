@@ -13,7 +13,19 @@
             name="input"
             class="column justify-center items-center"
           >
-            <span class="q-mb-md">Balance: 10.00€</span>
+            <span
+              class="q-mb-md"
+              :class="{
+                'text-negative':
+                  amount && accounts.active && amount > accounts.active.balance,
+              }"
+            >
+              Balance:
+              <template v-if="accounts.active">
+                {{ (accounts.active.balance / 100).toFixed(2) }}€
+              </template>
+              <q-spinner v-else />
+            </span>
             <q-input
               v-model.number="amount"
               maxlength="9"
@@ -22,10 +34,19 @@
               max-val="1000000"
               reverse-fill-mask
               unmasked-value
-              input-class="text-center text-h4"
               borderless
-              :rules="[(v) => !!v]"
+              no-error-icon
+              :rules="[
+                (v) => !!v,
+                (v) => !accounts.active || v <= accounts.active.balance,
+              ]"
               :size="(amount || 0).toFixed(2).length - 1"
+              :input-class="
+                (!amount && triedSubmit) ||
+                (amount && accounts.active && amount > accounts.active.balance)
+                  ? 'text-center text-h4 text-negative'
+                  : 'text-center text-h4'
+              "
             />
             <q-input
               v-model="iban"
@@ -51,7 +72,9 @@
             class="column justify-center items-center"
           >
             <h6 class="q-my-md">Amount</h6>
-            <div class="text-subtitle1 q-mb-md">10.00€</div>
+            <div class="text-subtitle1 q-mb-md">
+              {{ ((amount || 0) / 100).toFixed(2) }}€
+            </div>
 
             <q-separator />
 
@@ -88,7 +111,7 @@
         </q-carousel>
       </q-card-section>
 
-      <q-card-actions align="between" class="q-pr-lg q-pb-lg">
+      <q-card-actions align="between" class="q-px-lg q-pb-lg">
         <q-btn
           flat
           icon="arrow_back"
@@ -113,6 +136,7 @@
               : 'Confirmation'
           "
           type="submit"
+          @click="triedSubmit = true"
         />
       </q-card-actions>
     </q-card>
@@ -126,15 +150,19 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { AxiosError } from 'axios';
+import { useAccountStore } from 'src/stores/account-store';
 
 const { t } = useI18n();
 const $q = useQuasar();
 const $router = useRouter();
 
+const accounts = useAccountStore();
+
 const iban = ref('');
 const amount = ref(null as null | number);
 const note = ref(null as null | string);
 const slide = ref('input');
+const triedSubmit = ref(false);
 const frequencyOptions = [
   {
     label: 'Daily',
@@ -156,20 +184,28 @@ const frequencyOptions = [
 const operator = ref(null as null | number);
 const standingOrder = ref(false);
 
+const loading = ref(false);
+
 async function send() {
   if (iban.value == null) return;
   if (amount.value == null) return;
   try {
-    await api.post('/api/transfers/bankTransfers/', {
+    loading.value = true;
+    await api.post('/bank-transfers/', {
       amount: amount.value,
       note: note.value,
       iban: 'PT50' + iban.value,
     });
 
+    if (accounts.active)
+      accounts.active.balance = accounts.active.balance - amount.value;
+    else console.error('NO ACTIVE ACCOUNT');
+
     $q.notify({
       message: 'Transfer sent successfuly',
       color: 'positive',
     });
+
     if (standingOrder.value) {
       try {
         await api.post('/api/standingOrders/', {
@@ -199,12 +235,7 @@ async function send() {
         }
       }
     }
-    $router.push('/home');
 
-    $q.notify({
-      message: 'Transfer sent successfuly',
-      color: 'positive',
-    });
     $router.push('/home');
   } catch {
     $q.notify({

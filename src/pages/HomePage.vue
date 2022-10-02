@@ -3,8 +3,8 @@
     <q-card class="q-mb-md">
       <q-card-section class="column items-center">
         <div>Balance</div>
-        <div v-if="account" class="text-h5">
-          {{ (account.balance / 100).toFixed(2) }}€
+        <div v-if="accounts.active" class="text-h5">
+          {{ (accounts.active.balance / 100).toFixed(2) }}€
         </div>
         <q-spinner v-else size="lg" class="q-mt-md" />
       </q-card-section>
@@ -64,32 +64,17 @@
 </template>
 
 <script setup lang="ts">
-import { AxiosResponse } from 'axios';
 import { computed, ref } from 'vue';
 import TransferItem from 'src/components/TransferItem.vue';
 import { api } from 'src/boot/axios';
 import { useI18n } from 'vue-i18n';
-import { QInfiniteScroll, useQuasar } from 'quasar';
-import Account from 'src/types/Account';
 import Transfer from 'src/types/Transfer';
+import { useAccountStore } from 'src/stores/account-store';
 
-const $q = useQuasar();
 const { t } = useI18n();
 const transfers = ref([] as Transfer[]);
 
-const account = ref(null as null | Account);
-
-api.get('/accounts/').then((response: AxiosResponse<Account[]>) => {
-  if (response.data.length > 0) {
-    account.value = response.data[0];
-  } else {
-    $q.notify({
-      message: t('errors.account_not_found'),
-      color: 'negative',
-      position: 'top',
-    });
-  }
-});
+const accounts = useAccountStore();
 
 const hasMorePages = ref(true);
 const typeFilter = ref('none');
