@@ -35,7 +35,7 @@
           :label="t('login.createaccount')"
           class="q-mt-md"
           flat
-          to="/createaccount"
+          to="/register"
         />
       </q-card-section>
     </q-card>
