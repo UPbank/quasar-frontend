@@ -3,7 +3,7 @@
     <q-card>
       <q-card-section>
         <div
-          class="column justify-between text-white q-pa-md credit-card"
+          class="column justify-between text-white q-pa-md credit-card shadow-3"
           style="border-radius: 15px; aspect-ratio: 1.59; min-width: 250px"
         >
           <div class="column q-pa-sm q-mb-md">
