@@ -24,16 +24,13 @@
 </template>
 
 <script setup lang="ts">
-import { AxiosError } from 'axios';
 import { useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
 
 const { t } = useI18n();
 const $q = useQuasar();
-const $router = useRouter();
 
 const initialPagination = {
   rowsPerPage: 0,

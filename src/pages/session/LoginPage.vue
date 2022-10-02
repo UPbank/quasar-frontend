@@ -35,7 +35,7 @@
           :label="t('login.createaccount')"
           class="q-mt-md"
           flat
-          to="/createaccount"
+          to="/register"
         />
       </q-card-section>
     </q-card>
@@ -70,7 +70,7 @@ async function login() {
       password: password.value,
     });
 
-    api.defaults.headers.Authorization = `Token ${result.data['accessToken']}`;
+    api.defaults.headers.Authorization = `Token ${result.data['token']}`;
 
     $router.push('/home');
     $q.notify({

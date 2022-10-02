@@ -1,65 +1,44 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-page-container>
-      <router-view />
+  <q-layout view="hHh lpR fFf">
+    <q-page-container class="column items-center full-width">
+      <q-page
+        class="column items-center justify-center full-width"
+        id="page"
+        style="height: fit-content; min-height: 100vh"
+        padding
+      >
+        <router-view />
+      </q-page>
     </q-page-container>
   </q-layout>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-import EssentialLink, {
-  EssentialLinkProps,
-} from 'components/EssentialLink.vue';
-
-const essentialLinks: EssentialLinkProps[] = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev',
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
-  },
-];
-
-const leftDrawerOpen = ref(false);
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
+<script lang="ts" setup>
+import { api } from 'src/boot/axios';
+import { useRouter } from 'vue-router';
+const $router = useRouter();
+if (api.defaults.headers.Authorization) {
+  $router.replace('/home');
 }
 </script>
+
+<style lang="scss" scoped>
+#page {
+  background: linear-gradient(-15deg, #fac05e, #328fba, #59cd90, #fac05e);
+  background-size: 200% 200%;
+  animation: gradient 30s infinite;
+  height: 100vh;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 25% 25%;
+  }
+  50% {
+    background-position: 90% 90%;
+  }
+  100% {
+    background-position: 25% 25%;
+  }
+}
+</style>
