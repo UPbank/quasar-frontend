@@ -103,6 +103,20 @@ const routes: RouteRecordRaw[] = [
       previous: '/transfers',
     },
   },
+  {
+    path: '/transfers/standing-orders',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/transfers/StandingOrders.vue'),
+      },
+    ],
+    meta: {
+      name: 'transfers.standing_orders',
+      previous: '/transfers',
+    },
+  },
 
   {
     path: '/ibancertificate',
@@ -131,13 +145,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/CardManagerPage.vue') },
-    ],
-  },
-  {
-    path: '/transfers',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/TransfersPage.vue') },
     ],
   },
 

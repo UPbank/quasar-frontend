@@ -1,23 +1,23 @@
 <template>
   <div class="column items-center">
-    <div>{{ $t('Account Statements') }}</div>
+    <div>{{ t('Account Statements') }}</div>
   </div>
   <q-card class="q-gutter-x-md q-mt-md row justify-center" style="width: 350px">
     <div class="q-pa-md text-center">
-      <div>{{ $t('Month') }}</div>
+      <div>{{ t('Month') }}</div>
       <div class="q-gutter-xl">
         <q-select filled v-model="month" :options="options" />
       </div>
     </div>
     <div class="q-pa-md text-center">
-      <div>{{ $t('Year') }}</div>
+      <div>{{ t('Year') }}</div>
       <div class="q-gutter-xl">
         <q-select filled v-model="year" :options="optionss" />
       </div>
     </div>
   </q-card>
   <q-card-section class="text-right">
-    {{ $t('Export') }}
+    {{ t('Export') }}
     <q-btn round color="secondary" icon="cloud_upload" @click="exportToPDF" />
     <div id="TestPage" ref="document">
       <div id="element-to-convert">

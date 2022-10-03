@@ -28,8 +28,8 @@
         <q-card v-show="open">
           <q-card-section>
             <div id="element-to-convert">
-              <div>{{ $t('Entity') }}:</div>
-              <div>{{ $t('Amount') }}:</div>
+              <div>{{ t('Entity') }}:</div>
+              <div>{{ t('Amount') }}:</div>
             </div>
             <div class="cursor-pointer" style="width: 100px">
               {{ notes || 'Add notes' }} <q-icon name="edit" />
@@ -44,7 +44,7 @@
           </q-card-section>
 
           <q-card-section class="text-right">
-            {{ $t('Export Transaction') }}
+            {{ t('Export Transaction') }}
             <q-btn
               round
               color="secondary"

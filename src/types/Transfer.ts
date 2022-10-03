@@ -1,5 +1,5 @@
 export default interface Transfer {
-  id: string;
+  id: number;
   amount: number;
   date: string;
   metadata: Record<string, string>;

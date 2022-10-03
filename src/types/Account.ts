@@ -1,5 +1,5 @@
 export default interface Account {
-  id: string;
+  id: number;
   fullName: string;
   balance: number;
   iban: string;

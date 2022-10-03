@@ -19,13 +19,15 @@
             :options="options"
             emit-value
             map-options
+            @update:model-value="dryLoad()"
           />
           <q-input
             style="width: 300px"
             class="col self-center"
             v-model="filter"
-            :placeholder="t('transfers.search')"
             debounce="500"
+            :placeholder="t('transfers.search')"
+            @update:model-value="dryLoad()"
           >
             <template v-slot:append>
               <q-icon name="search" />
@@ -37,7 +39,14 @@
               transition-show="scale"
               transition-hide="scale"
             >
-              <q-date rounded standout v-model="date" range dense>
+              <q-date
+                rounded
+                standout
+                v-model="date"
+                range
+                dense
+                @update:model-value="dryLoad()"
+              >
                 <div class="row items-center justify-end">
                   <q-btn
                     rounded
@@ -63,7 +72,7 @@
       >
         <transfer-item
           v-for="(transfer, index) in transfers"
-          :name="getTransactionName(transfer)"
+          :name="getTransactionName(transfer.name)"
           :key="transfer.id"
           :amount="`${transfer.type == 'INCOME' ? '+' : '-'}${(
             transfer.amount / 100
@@ -99,6 +108,8 @@ import { api } from 'src/boot/axios';
 import { useI18n } from 'vue-i18n';
 import Transfer from 'src/types/Transfer';
 import { useAccountStore } from 'src/stores/account-store';
+
+import { getTranslatedName } from 'src/utils';
 
 const { t } = useI18n();
 const transfers = ref([] as Transfer[]);
@@ -182,11 +193,15 @@ async function onLoad(page: number, callback: () => void) {
   }
 }
 
-function getTransactionName(transaction: Transfer) {
-  if (transaction.name.startsWith('_')) {
-    return t(`transaction.${transaction.name}`);
-  } else {
-    return transaction.name;
-  }
+function getTransactionName(transactionName: string) {
+  return getTranslatedName(transactionName, t);
+}
+
+function dryLoad() {
+  prevQueryString.value = '';
+  transfers.value = [];
+  nextPage.value = null;
+  hasMorePages.value = true;
+  onLoad(0, () => void 0);
 }
 </script>

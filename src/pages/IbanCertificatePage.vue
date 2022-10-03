@@ -3,16 +3,16 @@
     <q-card>
       <q-card-section id="iban" ref="document">
         <div id="element-to-convert">
-          <div class="text-center">{{ $t('IBAN Certificate') }}</div>
-          <div>{{ $t('Name') }}: John Doe</div>
-          <div>{{ $t('Account Number') }}: 0000 123456789101</div>
+          <div class="text-center">{{ t('IBAN Certificate') }}</div>
+          <div>{{ t('Name') }}: John Doe</div>
+          <div>{{ t('Account Number') }}: 0000 123456789101</div>
           <div>IBAN: PT5000 123456789101124214</div>
-          <div>{{ $t('Issue Date') }}: 2022/09/19</div>
+          <div>{{ t('Issue Date') }}: 2022/09/19</div>
         </div>
       </q-card-section>
 
       <q-card-section class="text-right">
-        {{ $t('Export') }}
+        {{ t('Export') }}
         <q-btn
           round
           color="secondary"
