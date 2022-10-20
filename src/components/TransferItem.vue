@@ -61,9 +61,12 @@
 <script setup lang="ts">
 import html2pdf from 'html2pdf.js';
 import { defineProps, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 defineProps<{ name: string; day: string; time: string; amount: string }>();
 const open = ref(false);
 const notes = ref('');
+
+const { t } = useI18n();
 
 function exportToPDF() {
   html2pdf(document.getElementById('element-to-convert'), {

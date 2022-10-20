@@ -13,11 +13,10 @@
         <q-tr :props="props">
           <q-td auto-width>
             <q-btn
-              size="sm"
-              round
-              dense
-              @click="props.expand = !props.expand"
-              :icon="props.expand ? 'remove' : 'add'"
+              color="negative"
+              :label="t('transfers.delete')"
+              @click="deleteScheduled(props.row.id)"
+              icon="delete"
             />
           </q-td>
           <q-td>
@@ -27,46 +26,6 @@
             {{ t('transfers.' + props.row.frequency) }}
           </q-td>
           <q-td> {{ props.row.amount.toFixed(2) }}€ </q-td>
-        </q-tr>
-        <q-tr v-show="props.expand" :props="props">
-          <q-td colspan="100%">
-            <div class="column items-center q-gutter-y-md">
-              <div class="row q-gutter-x-md">
-                <q-select
-                  :label="t('transfers.frequency')"
-                  v-model="props.row.frequency"
-                  :options="frequencyOptions"
-                  map-options
-                  emit-value
-                  style="min-width: 150px"
-                />
-                <q-input
-                  v-model.number="props.row.amount"
-                  :label="t('transfers.amount')"
-                  mask="#.##"
-                  suffix="€"
-                  fill-mask="0"
-                  reverse-fill-mask
-                  unmasked-value
-                  input-class="text-right"
-                  style="min-width: 100px"
-                />
-              </div>
-              <div class="row q-gutter-x-md">
-                <q-btn
-                  color="negative"
-                  :label="t('transfers.delete')"
-                  @click="deleteScheduled(props.row.id)"
-                  icon="delete"
-                />
-                <q-btn
-                  color="primary"
-                  :label="t('transfers.save')"
-                  icon="save"
-                />
-              </div>
-            </div>
-          </q-td>
         </q-tr>
       </template>
     </q-table>
@@ -147,7 +106,7 @@ api
   .then((response) => {
     rows.value = response.data;
   })
-  .catch((e) => {
+  .catch(() => {
     $q.notify({
       message: t('standing_orders.error'),
       color: 'negative',
